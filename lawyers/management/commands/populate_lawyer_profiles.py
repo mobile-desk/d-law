@@ -82,10 +82,21 @@ class Command(BaseCommand):
     help = (
         "Ensure LawyerProfile exists for every user with user_type=lawyer. "
         "Optionally create new demo lawyer accounts. "
-        "Use --force to overwrite profiles and reset all lawyer display names to demo names."
+        "Use --force to overwrite profiles and reset all lawyer display names to demo names. "
+        "Use --bootstrap N on deploy to seed N demo lawyers only when no lawyer users exist yet."
     )
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            "--bootstrap",
+            type=int,
+            default=0,
+            metavar="N",
+            help=(
+                "If there are zero lawyer users, create N demo lawyers (same as --create). "
+                "If any lawyer exists, does nothing—safe to run on every deploy."
+            ),
+        )
         parser.add_argument(
             "--create",
             type=int,
@@ -109,8 +120,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         create_n: int = options["create"]
+        bootstrap: int = options["bootstrap"]
         password: str = options["password"]
         force: bool = options["force"]
+
+        if bootstrap > 0:
+            if User.objects.filter(user_type="lawyer").exists():
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"Bootstrap skipped: lawyer users already exist "
+                        f"({bootstrap} demo lawyers not created)."
+                    )
+                )
+            else:
+                create_n += bootstrap
 
         created_users = 0
         created_profiles = 0

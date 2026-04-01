@@ -20,7 +20,9 @@ This repo includes **Render** configuration so you can deploy with Postgres, Gun
 4. **Redeploy** the web service so Django picks up the new env vars.
 5. Optional: add **`GROQ_API_KEY`** (and model vars from `.env.example`) for AI replies.
 
-Build runs `collectstatic` and `migrate`. The free web instance may spin down when idle; upgrade if you need always-on.
+Build runs `collectstatic`, `migrate`, and `populate_lawyer_profiles --bootstrap 8` (seeds eight demo lawyers **only** when the database has no lawyer users yet, so redeploys do not duplicate them).
+
+The free web instance may spin down when idle; upgrade if you need always-on.
 
 ## Local development
 
