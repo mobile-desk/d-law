@@ -17,8 +17,9 @@ services:
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings
+      # Set to "false" in production when you no longer need the debug error pages.
       - key: DJANGO_DEBUG
-        value: "false"
+        value: "true"
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DJANGO_ALLOWED_HOSTS
