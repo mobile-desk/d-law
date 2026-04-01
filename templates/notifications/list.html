@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Alerts{% endblock %}
+{% block content %}
+<h1>Alerts</h1>
+<p class="lead">Updates about your cases.</p>
+
+{% if notifications %}
+<div class="card">
+  {% for n in notifications %}
+    <div class="case-row">
+      <div>
+        <strong>{{ n.title }}</strong>
+        {% if n.body %}<p class="notification-body">{{ n.body }}</p>{% endif %}
+        <div class="notification-date">{{ n.created_at|date:"M j, Y H:i" }}</div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">No notifications yet.</div>
+{% endif %}
+{% endblock %}

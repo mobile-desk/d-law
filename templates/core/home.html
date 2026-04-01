@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Legal Access — Know your rights, get help in Nigeria{% endblock %}
+{% block body_class %}page-home{% endblock %}
+
+{% block full_width %}
+<section class="landing-hero" style="background-image: url('{% static 'img/hero-landing.png' %}');" aria-labelledby="landing-title">
+  <div class="landing-hero__overlay" aria-hidden="true"></div>
+  <div class="landing-hero__inner">
+    <p class="landing-eyebrow">Nigeria · Legal information &amp; professional matching</p>
+    <h1 id="landing-title" class="landing-title">Know your rights.<br><span class="landing-title__accent">Get help you can trust.</span></h1>
+    <p class="landing-hero__lead">
+      Start with a private, guided conversation. Understand your options in plain language—then, if you choose,
+      we connect you with <strong>verified lawyers</strong> and <strong>human rights advocates</strong> matched to your situation.
+    </p>
+    <div class="landing-hero__actions">
+      <a class="btn btn-hero-solid" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
+      <a class="btn btn-hero-ghost" href="{% url 'register' %}">Create an account</a>
+    </div>
+    <ul class="landing-hero__trust" aria-label="Trust signals">
+      <li><span class="landing-check" aria-hidden="true"></span> No account required to begin</li>
+      <li><span class="landing-check" aria-hidden="true"></span> Verified professionals</li>
+      <li><span class="landing-check" aria-hidden="true"></span> Built for sensitive cases</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+
+  <section class="landing-section" aria-labelledby="what-title">
+    <div class="section-rule"></div>
+    <h2 id="what-title">What we offer</h2>
+    <p class="landing-intro">
+      Legal help should not feel out of reach. Legal Access is a <strong>guided front door</strong>—structured,
+      Nigeria-aware information first, then optional connection to people who can take your case further.
+    </p>
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
+        <h3 class="feature-card__title">Rights guidance</h3>
+        <p>Clear questions and answers about what happened, where, and who was involved—so you see your situation in context, not a cold checklist.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
+        <h3 class="feature-card__title">Anonymous first</h3>
+        <p>Explore without signing up. Share only what feels safe. Create an account later to save your case and message a matched professional.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
+        <h3 class="feature-card__title">Lawyers &amp; activists</h3>
+        <p>Not every issue belongs in court on day one. We include <strong>NGOs and defenders</strong> where that fit matters—not only barristers.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="landing-section landing-section--walnut" aria-labelledby="how-title">
+    <h2 id="how-title" class="landing-section--walnut__h">How it works</h2>
+    <ol class="step-list step-list--light">
+      <li>
+        <span class="step-list__num">1</span>
+        <div>
+          <strong>Guided chat</strong>
+          <p>Describe what happened. The assistant follows up with structured questions and plain-language education.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-list__num">2</span>
+        <div>
+          <strong>Clarify your issue</strong>
+          <p>We help surface the type of matter—civil, criminal concern, police conduct, safety, or human rights. You can edit before sharing.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-list__num">3</span>
+        <div>
+          <strong>Optional match</strong>
+          <p>Request a verified professional whose focus fits your category, when one is available.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-list__num">4</span>
+        <div>
+          <strong>One place to follow up</strong>
+          <p>With an account, track status, message your professional, and get alerts—without scattered threads.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="landing-section" aria-labelledby="issues-title">
+    <div class="section-rule"></div>
+    <h2 id="issues-title">Issues we help you think through</h2>
+    <p class="landing-intro">Examples—the assistant adapts to what you describe.</p>
+    <ul class="issue-tags" aria-label="Example issue types">
+      <li>Police &amp; detention</li>
+      <li>Work &amp; employment</li>
+      <li>Land &amp; tenancy</li>
+      <li>Domestic safety</li>
+      <li>Human rights</li>
+      <li>Civil disputes</li>
+    </ul>
+  </section>
+
+  <section class="landing-section landing-split" aria-labelledby="who-title">
+    <div class="landing-split__img" role="presentation" style="background-image: url('{% static 'img/hero-statue.png' %}');"></div>
+    <div class="landing-split__content">
+      <h2 id="who-title">Who this is for</h2>
+      <h3 class="landing-h3">Residents &amp; workers</h3>
+      <p>If something feels wrong and you are unsure what the law says—or whether to involve a lawyer—start here before retainers or silence.</p>
+      <h3 class="landing-h3">People who need privacy</h3>
+      <p>When stigma or safety has stopped you from asking for help, anonymous chat lowers the barrier. You decide when to identify yourself.</p>
+    </div>
+  </section>
+
+  <section class="landing-disclaimer" role="note">
+    <h2 class="landing-disclaimer__title">Important</h2>
+    <p>
+      <strong>Legal Access provides legal information and connection services, not legal advice.</strong>
+      Nothing here creates a lawyer–client relationship. For urgent danger, contact emergency services or a trusted helpline.
+      Confirm strategy with a qualified professional before acting or refraining from legal action.
+    </p>
+  </section>
+
+  <section class="landing-cta-bottom" aria-labelledby="cta-title">
+    <h2 id="cta-title" class="landing-cta-bottom__headline">Take the first step</h2>
+    <p class="landing-cta-bottom__text">Free to start. Clarity first—then choice.</p>
+    <div class="landing-hero__actions landing-hero__actions--footer">
+      <a class="btn btn-primary" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
+      <a class="btn btn-secondary" href="{% url 'login' %}">Log in</a>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Professional dashboard{% endblock %}
+{% block content %}
+<h1>Your cases</h1>
+<p class="lead">Review assignments and respond to clients.</p>
+
+<form method="get" class="card filter-form">
+  <label>Filter by status
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="assigned" {% if filter_status == 'assigned' %}selected{% endif %}>Assigned</option>
+      <option value="in_progress" {% if filter_status == 'in_progress' %}selected{% endif %}>In progress</option>
+      <option value="closed" {% if filter_status == 'closed' %}selected{% endif %}>Closed</option>
+    </select>
+  </label>
+</form>
+
+{% if cases %}
+<div class="card">
+  {% for c in cases %}
+  <div class="case-row">
+    <div>
+      <a href="{% url 'lawyers:case' c.id %}"><strong>Case #{{ c.id }}</strong></a>
+      <div class="case-row__meta-text">{{ c.category|default:"—" }}</div>
+    </div>
+    <span class="status-pill {{ c.status }}">{{ c.get_status_display }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">No cases in this view.</div>
+{% endif %}
+{% endblock %}

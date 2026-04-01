@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Chat · Legal Access{% endblock %}
+{% block body_class %}page-chat{% endblock %}
+{% block main_class %}chat-main{% endblock %}
+{% block content %}
+<div class="chat-canvas">
+  <div class="chat-app">
+    <header class="chat-top">
+      <div class="chat-top__row">
+        <div class="chat-top__brand">
+          <span class="chat-top__selector" title="Intake conversation">
+            <span class="chat-top__selector-icon" aria-hidden="true"></span>
+            <span class="chat-top__title">Intake</span>
+          </span>
+          <span class="chat-top__case" title="Case reference">#{{ case.id }}</span>
+        </div>
+        <span class="chat-top__pill">Private</span>
+      </div>
+      <p class="chat-top__hint">Stay anonymous until you create an account and link this case.</p>
+      {% if not llm_configured %}
+      <p class="chat-top__ai-hint" role="status">Add <code class="chat-top__code">GROQ_API_KEY</code> in <code class="chat-top__code">.env</code> for AI replies (see <code class="chat-top__code">.env.example</code>).</p>
+      {% endif %}
+    </header>
+
+    <div class="chat-body">
+      <div class="chat-stream" id="chat-stream" role="log" aria-live="polite" aria-relevant="additions">
+        {% if not chat_messages %}
+        <div class="chat-hero">
+          <div class="chat-hero__orb" aria-hidden="true"></div>
+          <h1 class="chat-hero__greeting">
+            <span id="chat-salute">Good afternoon</span>{% if user.is_authenticated %}<span class="chat-hero__comma">, </span><span class="chat-hero__name">{{ user.first_name|default:"there" }}</span>{% endif %}
+          </h1>
+          <p class="chat-hero__sub">What’s on <span class="chat-hero__gradient">your mind?</span></p>
+          <p class="chat-hero__lead">Describe your situation in your own words, or start with an example below.</p>
+        </div>
+        {% endif %}
+        {% for m in chat_messages %}
+          {% if m.is_ai %}
+          <article class="msg msg--ai">
+            <div class="msg__col">
+              <div class="msg__name-row">
+                <span class="msg__name">Assistant</span>
+                {% if m.metadata.reply_source == "llm" %}
+                <span class="msg__tag msg__tag--ai" title="Groq">AI</span>
+                {% endif %}
+              </div>
+              <div class="msg__bubble">{{ m.content }}</div>
+            </div>
+          </article>
+          {% else %}
+          <article class="msg msg--user">
+            <div class="msg__col">
+              <span class="msg__name">You</span>
+              <div class="msg__bubble">{{ m.content }}</div>
+            </div>
+          </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if show_assignment_cta %}
+      <aside class="chat-match" aria-labelledby="chat-match-title">
+        <h2 id="chat-match-title" class="chat-match__title">Next step</h2>
+        <p class="chat-match__text">Want a verified lawyer or advocate to review your situation? We’ll try to match you.</p>
+        <div class="chat-match__btns">
+          <form method="post" action="{% url 'cases:assign' case.id %}" class="chat-match__form">
+            {% csrf_token %}
+            <button type="submit" class="chat-match__btn chat-match__btn--primary">Find help</button>
+          </form>
+          <a class="chat-match__btn chat-match__btn--quiet" href="{% url 'chatbot:chat' case.id %}">Not now</a>
+        </div>
+      </aside>
+      {% endif %}
+
+      <footer class="chat-bar{% if chat_messages %} chat-bar--sticky{% endif %}">
+        {% if not chat_messages %}
+        <section class="chat-section chat-section--compose" aria-labelledby="chat-msg-heading-empty">
+          <h2 id="chat-msg-heading-empty" class="chat-bar__eyebrow">Message</h2>
+          <form method="post" class="chat-compose">
+            {% csrf_token %}
+            <label class="visually-hidden" for="chat-message">Your message</label>
+            <textarea id="chat-message" name="content" rows="2" placeholder="Describe what happened, or what you need help with…" autocomplete="off" required></textarea>
+            <div class="chat-compose__actions">
+              <button type="submit" class="chat-send__btn chat-send__btn--fab" aria-label="Send message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              </button>
+            </div>
+          </form>
+        </section>
+        <p class="chat-starters__eyebrow">Get started with an example below</p>
+        <div class="chat-starters" role="group" aria-label="Example topics">
+          <form method="post" class="chat-starters__f">{% csrf_token %}
+            <button type="submit" name="content" value="Police issue" class="chat-starter-card">
+              <span class="chat-starter-card__glyph" aria-hidden="true">P</span>
+              <span class="chat-starter-card__text">Police or arrest</span>
+            </button>
+          </form>
+          <form method="post" class="chat-starters__f">{% csrf_token %}
+            <button type="submit" name="content" value="Work issue" class="chat-starter-card">
+              <span class="chat-starter-card__glyph" aria-hidden="true">W</span>
+              <span class="chat-starter-card__text">Work or employment</span>
+            </button>
+          </form>
+          <form method="post" class="chat-starters__f">{% csrf_token %}
+            <button type="submit" name="content" value="Domestic or abuse concern" class="chat-starter-card">
+              <span class="chat-starter-card__glyph" aria-hidden="true">S</span>
+              <span class="chat-starter-card__text">Safety at home</span>
+            </button>
+          </form>
+          <form method="post" class="chat-starters__f">{% csrf_token %}
+            <button type="submit" name="content" value="Housing or eviction issue" class="chat-starter-card">
+              <span class="chat-starter-card__glyph" aria-hidden="true">H</span>
+              <span class="chat-starter-card__text">Housing or eviction</span>
+            </button>
+          </form>
+        </div>
+        <section class="chat-section chat-section--links" aria-labelledby="chat-more-heading-empty">
+          <h2 id="chat-more-heading-empty" class="chat-bar__eyebrow">More</h2>
+          <nav class="chat-links" aria-label="Case and account">
+            <a href="{% url 'cases:detail' case.id %}">Case summary</a>
+            <span class="chat-links__dot" aria-hidden="true"></span>
+            <a href="{% url 'register' %}">Save with an account</a>
+          </nav>
+        </section>
+        {% else %}
+        <section class="chat-section chat-section--topics" aria-labelledby="chat-quick-heading">
+          <h2 id="chat-quick-heading" class="chat-bar__eyebrow">Quick topics</h2>
+          <div class="chat-chips" role="group" aria-label="Quick topics">
+            <form method="post" class="chat-chips__f">{% csrf_token %}
+              <button class="chat-chip" type="submit" name="content" value="Police issue">Police</button>
+            </form>
+            <form method="post" class="chat-chips__f">{% csrf_token %}
+              <button class="chat-chip" type="submit" name="content" value="Work issue">Work</button>
+            </form>
+            <form method="post" class="chat-chips__f">{% csrf_token %}
+              <button class="chat-chip" type="submit" name="content" value="Domestic or abuse concern">Safety</button>
+            </form>
+            <form method="post" class="chat-chips__f">{% csrf_token %}
+              <button class="chat-chip" type="submit" name="content" value="Housing or eviction issue">Housing</button>
+            </form>
+          </div>
+        </section>
+        <section class="chat-section chat-section--links" aria-labelledby="chat-more-heading">
+          <h2 id="chat-more-heading" class="chat-bar__eyebrow">More</h2>
+          <nav class="chat-links" aria-label="Case and account">
+            <a href="{% url 'cases:detail' case.id %}">Case summary</a>
+            <span class="chat-links__dot" aria-hidden="true"></span>
+            <a href="{% url 'register' %}">Save with an account</a>
+          </nav>
+        </section>
+        <section class="chat-section chat-section--compose chat-section--compose-primary" aria-labelledby="chat-msg-heading">
+          <h2 id="chat-msg-heading" class="chat-bar__eyebrow">Message</h2>
+          <form method="post" class="chat-compose chat-compose--compact">
+            {% csrf_token %}
+            <label class="visually-hidden" for="chat-message">Your message</label>
+            <textarea id="chat-message" name="content" rows="1" placeholder="Write a message…" autocomplete="off" required></textarea>
+            <div class="chat-compose__actions">
+              <button type="submit" class="chat-send__btn chat-send__btn--fab" aria-label="Send message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              </button>
+            </div>
+          </form>
+        </section>
+        {% endif %}
+      </footer>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var salute = document.getElementById("chat-salute");
+  if (salute) {
+    var h = new Date().getHours();
+    salute.textContent = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+  }
+  var el = document.getElementById("chat-stream");
+  if (el) el.scrollTop = el.scrollHeight;
+})();
+</script>
+{% endblock %}

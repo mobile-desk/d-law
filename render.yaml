@@ -1,0 +1,31 @@
+# Render blueprint: https://render.com/docs/infrastructure-as-code
+# Netlify cannot run Django; this deploys the app on Render instead.
+
+databases:
+  - name: legal-access-db
+    databaseName: legal_access
+    user: legal_access
+    plan: free
+
+services:
+  - type: web
+    name: legal-access
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: legal-access-db
+          property: connectionString

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<h1>Create an account</h1>
+<p class="lead">Track your cases and message professionals when matched.</p>
+
+<form method="post" class="card form-card">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="form-group">
+      {{ field.label_tag }}
+      {{ field }}
+      {{ field.errors }}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+</form>
+<p class="footer-note"><a href="{% url 'login' %}">Already have an account?</a></p>
+{% endblock %}

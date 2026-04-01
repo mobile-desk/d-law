@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My cases{% endblock %}
+{% block content %}
+<h1>My cases</h1>
+<p class="lead">Cases you opened as a client and matters assigned to you as a professional.</p>
+
+{% if cases %}
+<div class="card">
+  {% for c in cases %}
+  <div class="case-row">
+    <div>
+      <a href="{% if c.assigned_to_id == request.user.id %}{% url 'lawyers:case' c.id %}{% else %}{% url 'cases:detail' c.id %}{% endif %}"><strong>Case #{{ c.id }}</strong></a>
+      {% if c.assigned_to_id == request.user.id and c.user_id == request.user.id %}
+      <span class="case-row__role">Your intake · Assigned to you</span>
+      {% elif c.assigned_to_id == request.user.id %}
+      <span class="case-row__role">Assigned to you</span>
+      {% elif c.user_id == request.user.id %}
+      <span class="case-row__role">Your intake</span>
+      {% endif %}
+      <div class="case-row__meta">{{ c.category|default:"General" }}</div>
+    </div>
+    <span class="status-pill {{ c.status }}">{{ c.get_status_display }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">
+  {% if request.user.user_type == 'lawyer' or request.user.user_type == 'activist' %}
+  No cases in this list yet. <a href="{% url 'chatbot:start' %}">Start a chat</a> as a client, or open the <a href="{% url 'lawyers:dashboard' %}">Professional dashboard</a> for assignment filters.
+  {% else %}
+  No cases yet. <a href="{% url 'chatbot:start' %}">Start a chat</a> to get help.
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
