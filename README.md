@@ -1,4 +1,4 @@
-# Legal Access (d law)
+# The Law (d law)
 
 Django app: guided legal intake chat, cases, and professional matching.
 

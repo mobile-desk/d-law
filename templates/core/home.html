@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Legal Access — Know your rights, get help in Nigeria{% endblock %}
+{% block title %}The Law — Know your rights, get help in Nigeria{% endblock %}
 {% block body_class %}page-home{% endblock %}
 
 {% block full_width %}
-<section class="landing-hero" style="background-image: url('{% static 'img/hero-landing.png' %}');" aria-labelledby="landing-title">
-  <div class="landing-hero__overlay" aria-hidden="true"></div>
+<section class="landing-hero landing-hero--alive" style="background-image: url('{% static 'img/hero-landing.png' %}');" aria-labelledby="landing-title">
+  <div class="landing-hero__orbs" aria-hidden="true">
+    <span class="landing-hero__orb landing-hero__orb--a"></span>
+    <span class="landing-hero__orb landing-hero__orb--b"></span>
+    <span class="landing-hero__orb landing-hero__orb--c"></span>
+  </div>
+  <div class="landing-hero__overlay landing-hero__overlay--alive" aria-hidden="true"></div>
   <div class="landing-hero__inner">
     <p class="landing-eyebrow">Nigeria · Legal information &amp; professional matching</p>
     <h1 id="landing-title" class="landing-title">Know your rights.<br><span class="landing-title__accent">Get help you can trust.</span></h1>
     <p class="landing-hero__lead">
-      Start with a private, guided conversation. Understand your options in plain language—then, if you choose,
+      Start with a private, guided conversation—on the web, on <strong>WhatsApp</strong>, or by <strong>SMS</strong>—with the same assistant.
+      Understand your options in plain language—then, if you choose,
       we connect you with <strong>verified lawyers</strong> and <strong>human rights advocates</strong> matched to your situation.
     </p>
     <div class="landing-hero__actions">
@@ -19,6 +25,7 @@
     </div>
     <ul class="landing-hero__trust" aria-label="Trust signals">
       <li><span class="landing-check" aria-hidden="true"></span> No account required to begin</li>
+      <li><span class="landing-check" aria-hidden="true"></span> AI chat on WhatsApp &amp; SMS</li>
       <li><span class="landing-check" aria-hidden="true"></span> Verified professionals</li>
       <li><span class="landing-check" aria-hidden="true"></span> Built for sensitive cases</li>
     </ul>
@@ -27,13 +34,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="landing-page">
+<div class="landing-page landing-page--alive">
 
   <section class="landing-section" aria-labelledby="what-title">
     <div class="section-rule"></div>
     <h2 id="what-title">What we offer</h2>
     <p class="landing-intro">
-      Legal help should not feel out of reach. Legal Access is a <strong>guided front door</strong>—structured,
+      Legal help should not feel out of reach. The Law is a <strong>guided front door</strong>—structured,
       Nigeria-aware information first, then optional connection to people who can take your case further.
     </p>
     <div class="feature-grid">
@@ -52,6 +59,11 @@
         <h3 class="feature-card__title">Lawyers &amp; activists</h3>
         <p>Not every issue belongs in court on day one. We include <strong>NGOs and defenders</strong> where that fit matters—not only barristers.</p>
       </article>
+      <article class="feature-card">
+        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
+        <h3 class="feature-card__title">WhatsApp &amp; SMS</h3>
+        <p>Chat with the same guided assistant where you already spend time—<strong>WhatsApp</strong> and <strong>SMS</strong>—so you can get clarity without opening a browser.</p>
+      </article>
     </div>
   </section>
 
@@ -62,7 +74,7 @@
         <span class="step-list__num">1</span>
         <div>
           <strong>Guided chat</strong>
-          <p>Describe what happened. The assistant follows up with structured questions and plain-language education.</p>
+          <p>Describe what happened on the site, on WhatsApp, or by SMS. The assistant follows up with structured questions and plain-language education.</p>
         </div>
       </li>
       <li>
@@ -117,7 +129,7 @@
   <section class="landing-disclaimer" role="note">
     <h2 class="landing-disclaimer__title">Important</h2>
     <p>
-      <strong>Legal Access provides legal information and connection services, not legal advice.</strong>
+      <strong>The Law provides legal information and connection services, not legal advice.</strong>
       Nothing here creates a lawyer–client relationship. For urgent danger, contact emergency services or a trusted helpline.
       Confirm strategy with a qualified professional before acting or refraining from legal action.
     </p>
@@ -125,7 +137,7 @@
 
   <section class="landing-cta-bottom" aria-labelledby="cta-title">
     <h2 id="cta-title" class="landing-cta-bottom__headline">Take the first step</h2>
-    <p class="landing-cta-bottom__text">Free to start. Clarity first—then choice.</p>
+    <p class="landing-cta-bottom__text">Free to start on the web, WhatsApp, or SMS. Clarity first—then choice.</p>
     <div class="landing-hero__actions landing-hero__actions--footer">
       <a class="btn btn-primary" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
       <a class="btn btn-secondary" href="{% url 'login' %}">Log in</a>
@@ -133,4 +145,35 @@
   </section>
 
 </div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+(function () {
+  var page = document.querySelector(".landing-page--alive");
+  if (!page || !("IntersectionObserver" in window)) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var sections = page.querySelectorAll(":scope > section");
+  var obs = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("landing-in-view");
+        obs.unobserve(entry.target);
+      });
+    },
+    { root: null, rootMargin: "0px 0px -5% 0px", threshold: 0.12 }
+  );
+  document.documentElement.classList.add("landing-scroll-enhanced");
+  var vh = window.innerHeight || document.documentElement.clientHeight;
+  sections.forEach(function (sec) {
+    var r = sec.getBoundingClientRect();
+    if (r.top < vh * 0.88 && r.bottom > vh * 0.06) {
+      sec.classList.add("landing-in-view");
+    } else {
+      obs.observe(sec);
+    }
+  });
+})();
+</script>
 {% endblock %}

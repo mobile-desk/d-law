@@ -19,6 +19,13 @@ class Case(models.Model):
         db_index=True,
         help_text="Anonymous users track cases via this id before signing up.",
     )
+    share_token = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text="Secret link for anonymous clients (email / share); not the numeric case id.",
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,

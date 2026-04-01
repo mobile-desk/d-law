@@ -5,9 +5,27 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
+from cases.assignment_intake import assignment_detail_rows_for_lawyer
 from cases.models import Case, Message
-from cases.permissions import guest_session_matches, user_can_access_case, user_is_assigned_professional
+from cases.permissions import (
+    guest_session_matches,
+    needs_assignment_intake_redirect,
+    user_can_access_case,
+    user_is_assigned_professional,
+)
+from cases.client_notify import maybe_queue_anonymous_reply_toast
 from matching.engine import assign_case, lawyer_accept_case, lawyer_reject_case
+
+
+@require_http_methods(["GET"])
+def case_share_access(request, share_token):
+    """
+    Magic link for anonymous clients: sets guest session and opens the case (numeric id in URL after redirect).
+    """
+    case = get_object_or_404(Case, share_token=share_token)
+    request.session["guest_session_id"] = str(case.guest_session_id)
+    messages.info(request, "Opened with your private link. Save this URL or create an account to keep access.")
+    return redirect("cases:detail", case_id=case.pk)
 
 
 def _case_category_label(case: Case) -> str:
@@ -15,6 +33,18 @@ def _case_category_label(case: Case) -> str:
     if not raw:
         return ""
     return raw.replace("_", " ").replace("-", " ").title()
+
+
+def _can_human_chat(request, case) -> bool:
+    """Logged-in client/lawyer, or anonymous guest with matching session (private link)."""
+    if not case.assigned_to_id or case.status not in ("assigned", "in_progress"):
+        return False
+    if request.user.is_authenticated:
+        return case.user_id == request.user.id or case.assigned_to_id == request.user.id
+    if case.user_id:
+        return False
+    gid = request.session.get("guest_session_id")
+    return bool(gid and guest_session_matches(case, gid))
 
 
 @login_required
@@ -49,16 +79,35 @@ def case_detail(request, case_id):
                 messages.success(request, "This case is now linked to your account.")
             return redirect("cases:detail", case_id=case.pk)
 
-        if action == "human_message" and request.user.is_authenticated and case.assigned_to_id:
+        if action == "human_message" and case.assigned_to_id:
             body = (request.POST.get("content") or "").strip()
-            if body and (case.user_id == request.user.id or case.assigned_to_id == request.user.id):
-                Message.objects.create(
-                    case=case,
-                    sender=request.user,
-                    content=body,
-                    is_ai=False,
-                )
+            if body and request.user.is_authenticated:
+                if case.user_id == request.user.id or case.assigned_to_id == request.user.id:
+                    Message.objects.create(
+                        case=case,
+                        sender=request.user,
+                        content=body,
+                        is_ai=False,
+                    )
+                    if not case.user_id and case.assigned_to_id == request.user.id:
+                        maybe_queue_anonymous_reply_toast(request, case, request.user)
+            elif body and not case.user_id and not request.user.is_authenticated:
+                gid = request.session.get("guest_session_id")
+                if (
+                    gid
+                    and guest_session_matches(case, gid)
+                    and case.status in ("assigned", "in_progress")
+                ):
+                    Message.objects.create(
+                        case=case,
+                        sender=None,
+                        content=body,
+                        is_ai=False,
+                    )
             return redirect("cases:detail", case_id=case.pk)
+
+    if needs_assignment_intake_redirect(request, case):
+        return redirect("cases:assignment_intake", case_id=case.pk)
 
     gid = request.session.get("guest_session_id")
     can_claim = (
@@ -67,12 +116,7 @@ def case_detail(request, case_id):
         and gid
         and guest_session_matches(case, gid)
     )
-    can_human_chat = (
-        case.assigned_to_id
-        and request.user.is_authenticated
-        and (case.user_id == request.user.id or case.assigned_to_id == request.user.id)
-        and case.status in ("assigned", "in_progress")
-    )
+    can_human_chat = _can_human_chat(request, case)
     if user_is_assigned_professional(request, case):
         case_viewer_role = "professional"
     elif case.user_id and case.user_id == request.user.id:
@@ -82,6 +126,12 @@ def case_detail(request, case_id):
     else:
         case_viewer_role = "client"
 
+    show_assignment_rows = user_is_assigned_professional(request, case) or request.user.is_staff
+    case_human_messages = (
+        Message.objects.filter(case=case, is_ai=False)
+        .select_related("sender")
+        .order_by("created_at")
+    )
     return render(
         request,
         "cases/detail.html",
@@ -91,6 +141,10 @@ def case_detail(request, case_id):
             "can_human_chat": can_human_chat,
             "category_label": _case_category_label(case),
             "case_viewer_role": case_viewer_role,
+            "case_human_messages": case_human_messages,
+            "assignment_detail_rows": (
+                assignment_detail_rows_for_lawyer(case) if show_assignment_rows else []
+            ),
         },
     )
 
@@ -111,9 +165,65 @@ def case_assign(request, case_id):
                 request,
                 "No verified professional is available for this category yet. Please try again later or contact support.",
             )
+        if ok and needs_assignment_intake_redirect(request, case):
+            return redirect("cases:assignment_intake", case_id=case.pk)
         return redirect("cases:detail", case_id=case.pk)
 
     return redirect("cases:detail", case_id=case.pk)
+
+
+@require_http_methods(["GET", "POST"])
+def assignment_intake(request, case_id):
+    case = get_object_or_404(Case.objects.select_related("assigned_to", "user"), pk=case_id)
+    if not user_can_access_case(request, case):
+        return HttpResponseForbidden("You cannot access this case.")
+
+    if request.user.is_staff or user_is_assigned_professional(request, case):
+        return redirect("cases:detail", case_id=case.pk)
+
+    if not (case.assigned_to_id and case.status in ("assigned", "in_progress")):
+        return redirect("cases:detail", case_id=case.pk)
+
+    from cases.assignment_intake import (
+        assignment_intake_complete,
+        category_slug_for_case,
+        field_rows_with_values,
+        fields_for_case,
+        merge_assignment_details,
+        validate_post,
+    )
+
+    if request.method == "GET" and assignment_intake_complete(case, request):
+        return redirect("cases:detail", case_id=case.pk)
+
+    if request.method == "POST":
+        posted = {f["name"]: (request.POST.get(f["name"]) or "") for f in fields_for_case(case, request)}
+        ok, errors, cleaned = validate_post(case, request, posted)
+        if ok:
+            merge_assignment_details(case, cleaned)
+            messages.success(request, "Thanks — your lawyer has the details they need to help you.")
+            return redirect("cases:detail", case_id=case.pk)
+        return render(
+            request,
+            "cases/assignment_intake.html",
+            {
+                "case": case,
+                "field_rows": field_rows_with_values(case, request, posted=posted),
+                "category_slug": category_slug_for_case(case),
+                "errors": errors,
+            },
+        )
+
+    return render(
+        request,
+        "cases/assignment_intake.html",
+        {
+            "case": case,
+            "field_rows": field_rows_with_values(case, request),
+            "category_slug": category_slug_for_case(case),
+            "errors": [],
+        },
+    )
 
 
 @login_required

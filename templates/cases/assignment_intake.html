@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Details for your lawyer · Case #{{ case.id }}{% endblock %}
+{% block body_class %}page-case-detail page-assignment-intake{% endblock %}
+{% block content %}
+<div class="case-page">
+  <header class="case-hero">
+    <p class="case-hero__eyebrow">Case #{{ case.id }}</p>
+    <h1 class="case-hero__title">A few more details</h1>
+    <p class="case-hero__tagline">
+      Your matter is assigned. Please answer the questions below so your professional can help you effectively.
+    </p>
+    <div class="case-hero__meta">
+      <span class="status-pill {{ case.status }}">{{ case.get_status_display }}</span>
+    </div>
+  </header>
+
+  {% if errors %}
+  <ul class="messages" role="alert">
+    {% for e in errors %}
+    <li class="error">{{ e }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <form method="post" class="card assignment-intake-form">
+    {% csrf_token %}
+    {% for field in field_rows %}
+    <div class="assignment-intake-fieldwrap{% if field.conditional_on %} assignment-intake-fieldwrap--conditional{% endif %}"
+         {% if field.conditional_on %}data-conditional-field="{{ field.conditional_on.field }}" data-conditional-value="{{ field.conditional_on.value }}"{% endif %}>
+      <div class="form-group">
+        <label for="id_{{ field.name }}">{{ field.label }}{% if field.required %} <span class="assignment-intake__req">*</span>{% endif %}</label>
+        {% if field.help_text %}
+        <p class="assignment-intake__hint">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.type == "textarea" %}
+        <textarea id="id_{{ field.name }}" name="{{ field.name }}" class="assignment-intake-input" rows="4" {% if field.required %}required{% endif %}>{{ field.value }}</textarea>
+        {% elif field.type == "select" %}
+        <select id="id_{{ field.name }}" name="{{ field.name }}" class="assignment-intake-input assignment-intake-select" {% if field.required %}required{% endif %}>
+          {% for val, lab in field.choices %}
+          <option value="{{ val }}" {% if field.value == val %}selected{% endif %}>{{ lab }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input id="id_{{ field.name }}" name="{{ field.name }}" class="assignment-intake-input" type="{{ field.type }}" value="{{ field.value }}" {% if field.required %}required{% endif %} autocomplete="{% if field.type == 'email' %}email{% elif field.type == 'tel' %}tel{% else %}on{% endif %}">
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit details</button>
+  </form>
+  <script>
+  (function () {
+    var form = document.querySelector(".assignment-intake-form");
+    if (!form) return;
+    function sync() {
+      form.querySelectorAll(".assignment-intake-fieldwrap--conditional").forEach(function (wrap) {
+        var fn = wrap.getAttribute("data-conditional-field");
+        var want = wrap.getAttribute("data-conditional-value");
+        var control = form.querySelector('[name="' + fn + '"]');
+        var show = control && control.value === want;
+        wrap.hidden = !show;
+        wrap.style.display = show ? "" : "none";
+        var input = wrap.querySelector(".assignment-intake-input");
+        if (input) {
+          input.required = !!show;
+          if (!show) input.setCustomValidity("");
+        }
+      });
+    }
+    form.addEventListener("change", sync);
+    form.addEventListener("input", sync);
+    sync();
+  })();
+  </script>
+
+  <p class="footer-note">
+    <a href="{% url 'cases:detail' case.id %}">Back to case summary</a>
+  </p>
+</div>
+{% endblock %}

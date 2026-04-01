@@ -18,6 +18,28 @@
 
   <div class="lawyer-workspace__grid">
     <div class="lawyer-workspace__col lawyer-workspace__col--file">
+      {% if not case.user_id %}
+      <section class="case-card case-card--share-link" aria-labelledby="client-link-title">
+        <h2 id="client-link-title" class="case-card__title case-card__title--quiet">Client access link</h2>
+        <p class="case-card__lead">This case has no linked account. The client should use this <strong>UUID link</strong> (not the case number) to open their matter.</p>
+        <div class="mvp-share-url-row">
+          <input type="text" readonly class="mvp-share-url-input" value="{{ client_share_url }}" id="lawyer-client-share-url" aria-label="Client access URL">
+          <button type="button" class="btn btn-secondary" id="lawyer-client-share-copy">Copy</button>
+        </div>
+        <script>
+        (function () {
+          var inp = document.getElementById("lawyer-client-share-url");
+          var btn = document.getElementById("lawyer-client-share-copy");
+          if (!inp || !btn) return;
+          btn.addEventListener("click", function () {
+            inp.select();
+            navigator.clipboard.writeText(inp.value).then(function () { btn.textContent = "Copied"; })
+              .catch(function () { document.execCommand("copy"); btn.textContent = "Copied"; });
+          });
+        })();
+        </script>
+      </section>
+      {% endif %}
       {% if case.status == 'assigned' %}
       <section class="case-card case-card--lawyer-actions" aria-labelledby="assign-respond-title">
         <h2 id="assign-respond-title" class="case-card__title">Respond to assignment</h2>
@@ -62,6 +84,18 @@
       </section>
       {% endif %}
 
+      {% if assignment_detail_rows %}
+      <section class="case-card" aria-labelledby="client-details-title">
+        <h2 id="client-details-title" class="case-card__title">Details from client</h2>
+        <dl class="assignment-detail-dl">
+          {% for label, value in assignment_detail_rows %}
+          <dt>{{ label }}</dt>
+          <dd>{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </section>
+      {% endif %}
+
       {% if case.description %}
       <section class="case-card" aria-labelledby="intake-sum-title">
         <h2 id="intake-sum-title" class="case-card__title">Intake summary</h2>
@@ -70,7 +104,7 @@
       {% endif %}
     </div>
 
-    <div class="lawyer-workspace__col lawyer-workspace__col--chat">
+    <div class="lawyer-workspace__col lawyer-workspace__col--chat lawyer-workspace__col--sticky-chat">
       <section class="case-card case-card--thread" aria-labelledby="thread-ws-title">
         <h2 id="thread-ws-title" class="case-card__title">Messages</h2>
         <div class="case-thread">
@@ -88,15 +122,15 @@
         </div>
       </section>
 
-      <section class="case-card case-card--compose" aria-labelledby="reply-ws-title">
-        <h2 id="reply-ws-title" class="case-card__title">Reply to client</h2>
-        <form method="post" class="case-compose-form">
+      <section class="case-card case-card--compose case-card--compose--compact" aria-labelledby="reply-ws-title">
+        <h2 id="reply-ws-title" class="case-card__title case-card__title--quiet">Reply to client</h2>
+        <form method="post" class="case-compose-form case-compose-form--compact">
           {% csrf_token %}
           <label class="form-group">
             <span>Message</span>
-            <textarea name="content" rows="4" required placeholder="Your message to the client…"></textarea>
+            <textarea name="content" rows="2" required placeholder="Your message to the client…"></textarea>
           </label>
-          <button type="submit" class="btn btn-primary">Send</button>
+          <button type="submit" class="btn btn-primary btn-block">Send</button>
         </form>
       </section>
     </div>

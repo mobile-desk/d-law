@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Case #{{ case.id }} · Legal Access{% endblock %}
+{% block title %}Case #{{ case.id }} · The Law{% endblock %}
 {% block body_class %}page-case-detail page-case-detail--{{ case_viewer_role }}{% endblock %}
 {% block content %}
 <div class="case-page case-page--{{ case_viewer_role }}">
@@ -15,7 +15,11 @@
     {% else %}
     <p class="case-hero__eyebrow">Your case</p>
     <h1 class="case-hero__title">Case #{{ case.id }}</h1>
+    {% if case.assigned_to_id and case.status == 'assigned' or case.assigned_to_id and case.status == 'in_progress' %}
+    <p class="case-hero__tagline">{% if user.is_authenticated %}Case details and your conversation with your professional.{% else %}Your case details and a direct line to your professional — private link, no account needed.{% endif %}</p>
+    {% else %}
     <p class="case-hero__tagline">Track status and next steps for your request.</p>
+    {% endif %}
     {% endif %}
     <div class="case-hero__meta">
       <span class="status-pill {{ case.status }}">{{ case.get_status_display }}</span>
@@ -26,6 +30,95 @@
     </div>
   </header>
 
+  {% if case_viewer_role == 'client' %}
+  <div class="case-detail-layout case-detail-layout--two-col">
+    <div class="case-detail-layout__main">
+      {% if can_claim %}
+      <section class="case-card case-card--claim" aria-labelledby="claim-title">
+        <h2 id="claim-title" class="case-card__title">Link this case</h2>
+        <p class="case-card__lead">Save this case to your account so you can track it under <strong>My cases</strong>.</p>
+        <form method="post" class="case-claim-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="claim">
+          <button type="submit" class="btn btn-primary">Claim this case</button>
+        </form>
+      </section>
+      {% endif %}
+
+      {% if assignment_detail_rows %}
+      <section class="case-card" aria-labelledby="client-details-title">
+        <h2 id="client-details-title" class="case-card__title">Details from client</h2>
+        <dl class="assignment-detail-dl">
+          {% for label, value in assignment_detail_rows %}
+          <dt>{{ label }}</dt>
+          <dd>{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </section>
+      {% endif %}
+
+      {% if case.description %}
+      <section class="case-card" aria-labelledby="summary-title">
+        <h2 id="summary-title" class="case-card__title">Summary</h2>
+        <div class="case-article">{{ case.description }}</div>
+      </section>
+      {% endif %}
+
+      {% if case.assigned_to %}
+      <section class="case-card case-card--assignee" aria-labelledby="assignee-title">
+        <h2 id="assignee-title" class="case-card__title case-card__title--quiet">Assigned to</h2>
+        <p class="case-assignee__name">{{ case.assigned_to.get_full_name|default:case.assigned_to.email }}</p>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="case-detail-layout__aside{% if case.assigned_to %} case-detail-layout__aside--with-chat{% endif %}" aria-label="Messages and actions">
+      {% if case.assigned_to %}
+      <section class="case-card case-card--thread" aria-labelledby="thread-client-title">
+        <h2 id="thread-client-title" class="case-card__title">Messages</h2>
+        <div class="case-thread">
+          {% for m in case_human_messages %}
+          <article class="case-msg case-msg--user">
+            <div class="case-msg__head">
+              <span class="case-msg__who">{% if m.sender_id == case.assigned_to_id %}{{ case.assigned_to.get_full_name|default:case.assigned_to.email }}{% elif user.is_authenticated and m.sender_id == user.id %}You{% elif not m.sender %}You{% else %}{{ m.sender.get_full_name|default:m.sender.email }}{% endif %}</span>
+              <time class="case-msg__time" datetime="{{ m.created_at|date:'c' }}">{{ m.created_at|date:"M j, H:i" }}</time>
+            </div>
+            <div class="case-msg__body">{{ m.content }}</div>
+          </article>
+          {% empty %}
+          <p class="case-thread__empty">No messages yet. Send one below to reach your professional.</p>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if can_human_chat %}
+      <section class="case-card case-card--compose case-card--compose--compact" aria-labelledby="compose-title">
+        <h2 id="compose-title" class="case-card__title case-card__title--quiet">Message your professional</h2>
+        <form method="post" class="case-compose-form case-compose-form--compact">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="human_message">
+          <label class="form-group">
+            <span>Message</span>
+            <textarea name="content" rows="2" required placeholder="Write to your professional…"></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">Send</button>
+        </form>
+      </section>
+      {% endif %}
+
+      <nav class="case-actions case-actions--aside" aria-label="Case actions">
+        <a class="case-actions__link" href="{% url 'chatbot:chat' case.id %}">Continue AI chat</a>
+        {% if not case.assigned_to %}
+        <form method="post" action="{% url 'cases:assign' case.id %}" class="inline-assign-form case-actions__form">
+          {% csrf_token %}
+          <button type="submit" class="link-button case-actions__link">Request a lawyer</button>
+        </form>
+        {% endif %}
+      </nav>
+    </aside>
+  </div>
+  {% else %}
   {% if can_claim %}
   <section class="case-card case-card--claim" aria-labelledby="claim-title">
     <h2 id="claim-title" class="case-card__title">Link this case</h2>
@@ -35,6 +128,18 @@
       <input type="hidden" name="action" value="claim">
       <button type="submit" class="btn btn-primary">Claim this case</button>
     </form>
+  </section>
+  {% endif %}
+
+  {% if assignment_detail_rows %}
+  <section class="case-card" aria-labelledby="client-details-title">
+    <h2 id="client-details-title" class="case-card__title">Details from client</h2>
+    <dl class="assignment-detail-dl">
+      {% for label, value in assignment_detail_rows %}
+      <dt>{{ label }}</dt>
+      <dd>{{ value }}</dd>
+      {% endfor %}
+    </dl>
   </section>
   {% endif %}
 
@@ -106,5 +211,6 @@
     </form>
     {% endif %}
   </nav>
+  {% endif %}
 </div>
 {% endblock %}

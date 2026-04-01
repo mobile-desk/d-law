@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}Legal Access{% endblock %}</title>
+  <title>{% block title %}The Law{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     <div class="site-header__inner">
       <a class="logo" href="{% url 'home' %}">
         <span class="logo__seal" aria-hidden="true"></span>
-        <span class="logo__text"><span class="logo__serif">Legal</span><span class="logo__sans">Access</span></span>
+        <span class="logo__text"><span class="logo__serif">The Law</span><span class="logo__sans">Nigeria</span></span>
       </a>
       <input type="checkbox" id="site-nav-open" class="visually-hidden">
       <label for="site-nav-open" class="site-nav-burger" id="site-nav-burger" aria-expanded="false" aria-controls="site-nav">
@@ -70,7 +70,39 @@
         {% endfor %}
       </ul>
     {% endif %}
+    {% if mvp_client_reply_copy_url %}
+    <div class="mvp-toast" role="status" id="mvp-client-toast">
+      <button type="button" class="mvp-toast__close" aria-label="Dismiss">&times;</button>
+      <p class="mvp-toast__title">Reply sent — anonymous client</p>
+      <p class="mvp-toast__text">SMTP is not configured yet. Copy this link and send it to the client (email/SMS).</p>
+      {% if mvp_client_reply_email_hint %}
+      <p class="mvp-toast__hint">Email from intake: <strong>{{ mvp_client_reply_email_hint }}</strong></p>
+      {% else %}
+      <p class="mvp-toast__hint">No email on file — share the link only.</p>
+      {% endif %}
+      <div class="mvp-toast__row">
+        <input type="text" readonly class="mvp-toast__input" value="{{ mvp_client_reply_copy_url }}" id="mvp-client-link-input" aria-label="Client link to copy">
+        <button type="button" class="btn btn-secondary mvp-toast__copy" id="mvp-client-copy-btn">Copy</button>
+      </div>
+    </div>
+    <script>
+    (function () {
+      var inp = document.getElementById("mvp-client-link-input");
+      var btn = document.getElementById("mvp-client-copy-btn");
+      var toast = document.getElementById("mvp-client-toast");
+      if (!inp || !btn || !toast) return;
+      btn.addEventListener("click", function () {
+        inp.select();
+        navigator.clipboard.writeText(inp.value).then(function () { btn.textContent = "Copied"; })
+          .catch(function () { document.execCommand("copy"); btn.textContent = "Copied"; });
+      });
+      var close = toast.querySelector(".mvp-toast__close");
+      if (close) close.addEventListener("click", function () { toast.hidden = true; });
+    })();
+    </script>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
+  {% block page_scripts %}{% endblock %}
 </body>
 </html>
