@@ -21,9 +21,14 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()]
-if DEBUG and "testserver" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append("testserver")
+_raw_allowed = os.environ.get("DJANGO_ALLOWED_HOSTS", "*")
+_allowed_list = [h.strip() for h in _raw_allowed.split(",") if h.strip()]
+if "*" in _allowed_list:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = _allowed_list
+    if DEBUG and "testserver" not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append("testserver")
 
 CSRF_TRUSTED_ORIGINS = [
     h.strip()
