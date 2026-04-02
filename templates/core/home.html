@@ -79,6 +79,31 @@
     </div>
   </section>
 
+  <section class="home-block home-block--pro-bono" aria-labelledby="home-pro-bono-title">
+    <div class="home-pro-bono">
+      <div class="home-pro-bono__accent" aria-hidden="true">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="home-pro-bono__body">
+        <p class="home-pro-bono__eyebrow">A core part of The Law</p>
+        <h2 id="home-pro-bono-title" class="home-block__title">Pro bono cases</h2>
+        <p class="home-block__subtitle home-pro-bono__lead">
+          Justice shouldn’t depend on what you can pay. We’re building The Law so verified professionals can take on <strong>pro bono</strong> matters when a case fits—giving people who can’t afford private fees a real path to representation, not just information.
+        </p>
+        <ul class="home-pro-bono__points">
+          <li><span class="home-pro-bono__check" aria-hidden="true">✓</span> Professionals choose when they can offer pro bono work alongside paid matters.</li>
+          <li><span class="home-pro-bono__check" aria-hidden="true">✓</span> Matching and case tools help you move from chat to a structured matter when someone steps in for free.</li>
+          <li><span class="home-pro-bono__check" aria-hidden="true">✓</span> We’re MVP today—pro bono capacity grows as more advocates join the platform.</li>
+        </ul>
+        <p class="home-pro-bono__note">Availability varies by professional and matter type; we never guarantee a specific outcome.</p>
+        <div class="home-pro-bono__actions">
+          <a class="btn btn-primary" href="{% url 'chatbot:start' %}">Start with chat</a>
+          <a class="btn btn-secondary" href="{% url 'product' %}">Read the product plan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="home-block home-block--flow" aria-labelledby="home-flow-title">
     <div class="home-block__head">
       <h2 id="home-flow-title" class="home-block__title">How it works</h2>

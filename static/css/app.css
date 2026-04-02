@@ -3926,6 +3926,139 @@ html.landing-scroll-enhanced .landing-page--alive > section.landing-in-view .iss
   margin-bottom: 1.75rem;
 }
 
+/* Pro bono — spotlight */
+.home-block--pro-bono {
+  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.home-pro-bono {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem 1.5rem;
+  align-items: start;
+  padding: clamp(1.5rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(145deg, #2a221c 0%, #3d2e26 48%, #352a24 100%);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  box-shadow: var(--shadow-deep), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  color: rgba(250, 247, 242, 0.92);
+}
+
+@media (max-width: 539px) {
+  .home-pro-bono {
+    grid-template-columns: 1fr;
+  }
+
+  .home-pro-bono__accent {
+    justify-self: start;
+  }
+}
+
+.home-pro-bono__accent {
+  width: 3.25rem;
+  height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(197, 160, 89, 0.18);
+  border: 1px solid rgba(197, 160, 89, 0.45);
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.home-pro-bono__accent svg {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.home-pro-bono__body {
+  min-width: 0;
+}
+
+.home-pro-bono__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.75);
+}
+
+.home-block--pro-bono .home-block__title {
+  color: #faf8f4;
+  margin-bottom: 0.65rem;
+}
+
+.home-pro-bono__lead.home-block__subtitle,
+.home-block--pro-bono .home-block__subtitle {
+  color: rgba(250, 247, 242, 0.88);
+  max-width: 40rem;
+}
+
+.home-pro-bono__lead strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.home-pro-bono__points {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 40rem;
+}
+
+.home-pro-bono__points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: rgba(250, 247, 242, 0.88);
+}
+
+.home-pro-bono__check {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.home-pro-bono__note {
+  margin: 1.15rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(232, 220, 200, 0.55);
+  max-width: 36rem;
+}
+
+.home-pro-bono__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.home-pro-bono__actions .btn-primary {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+}
+
+.home-pro-bono__actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #faf8f4;
+  border-color: rgba(250, 247, 242, 0.35);
+  box-shadow: none;
+}
+
+.home-pro-bono__actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(197, 160, 89, 0.55);
+}
+
 /* Feature grid */
 .home-features {
   display: grid;
