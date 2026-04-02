@@ -647,6 +647,15 @@ p.lead {
 
 .page-chat {
   background: linear-gradient(180deg, #ebe8e3 0%, #e8e4de 100%);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body.page-chat {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 639px) {
@@ -659,6 +668,8 @@ p.lead {
 
   .page-chat .site-header {
     flex-shrink: 0;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .page-chat main.chat-main {
@@ -666,19 +677,28 @@ p.lead {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    min-width: 0;
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .page-chat .chat-canvas {
     flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
 
   .page-chat .chat-app {
     flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 
@@ -709,7 +729,8 @@ p.lead {
   border-radius: var(--radius-xl);
   border: 1px solid rgba(61, 43, 31, 0.06);
   box-shadow: var(--shadow-soft), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 @media (max-width: 639px) {
@@ -731,22 +752,32 @@ p.lead {
     border-radius: 0;
     flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
+    max-width: 100%;
     overflow: hidden;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
   }
   .chat-stream {
     flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
+    max-width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    overscroll-behavior-x: none;
     padding-left: max(0.65rem, env(safe-area-inset-left));
     padding-right: max(0.65rem, env(safe-area-inset-right));
   }
   .chat-bar {
     border-radius: 0;
     flex-shrink: 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
     padding-left: max(0.5rem, env(safe-area-inset-left));
     padding-right: max(0.5rem, env(safe-area-inset-right));
     padding-bottom: max(0.65rem, env(safe-area-inset-bottom));
@@ -785,6 +816,9 @@ p.lead {
   top: var(--site-header-offset);
   z-index: 160;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .chat-top__row {
@@ -792,6 +826,8 @@ p.lead {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chat-top__brand {
@@ -799,6 +835,7 @@ p.lead {
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .chat-top__selector {
@@ -861,6 +898,9 @@ p.lead {
   line-height: 1.45;
   color: #a39a90;
   letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .chat-top__code {
@@ -954,6 +994,7 @@ p.lead {
 
 .msg {
   max-width: 100%;
+  min-width: 0;
 }
 
 .msg--ai {
@@ -971,6 +1012,7 @@ p.lead {
   flex-direction: column;
   align-items: flex-start;
   max-width: min(100%, 20rem);
+  min-width: 0;
 }
 
 .msg--user .msg__col {
@@ -1322,6 +1364,8 @@ p.lead {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-inset-soft), 0 4px 18px rgba(45, 30, 23, 0.05);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chat-compose:focus-within {
@@ -1338,6 +1382,8 @@ p.lead {
   margin-bottom: 0.35rem;
   padding: 0.28rem 0.4rem 0.28rem 0.55rem;
   border-radius: 14px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chat-compose textarea {
