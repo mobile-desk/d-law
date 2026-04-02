@@ -1,19 +1,70 @@
 {% extends "base.html" %}
-{% block title %}Log in{% endblock %}
-{% block content %}
-<h1>Log in</h1>
-<p class="lead">Access your cases and messages.</p>
+{% load static %}
+{% block title %}Log in · The Law{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block main_class %}container container--auth-wide{% endblock %}
 
-<form method="post" class="card form-card" action="{% url 'login' %}">
-  {% csrf_token %}
-  {% for field in form %}
-    <div class="form-group">
-      {{ field.label_tag }}
-      {{ field }}
-      {{ field.errors }}
+{% block content %}
+<div class="auth-split">
+  <div class="auth-split__main">
+    <div class="auth-brand-mark" aria-hidden="true">
+      <svg class="auth-brand-mark__icon" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="19" stroke="currentColor" stroke-width="1.5"/><path d="M12 26V14l8-4 8 4v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 10v20M16 18h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary btn-block">Log in</button>
-</form>
-<p class="footer-note"><a href="{% url 'register' %}">Need an account?</a></p>
+    <header class="auth-card__head">
+      <h1 class="auth-card__title">Welcome back</h1>
+      <p class="auth-card__sub">Enter your email and password to continue.</p>
+    </header>
+
+    <form method="post" class="auth-form" action="{% url 'login' %}" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="auth-errors" role="alert">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="form-group auth-field auth-field--email">
+        {{ form.username.label_tag }}
+        <div class="auth-input-wrap">
+          {{ form.username }}
+        </div>
+        {{ form.username.errors }}
+      </div>
+
+      <div class="form-group auth-field auth-field--password">
+        {{ form.password.label_tag }}
+        <div class="auth-input-wrap">
+          {{ form.password }}
+        </div>
+        {{ form.password.errors }}
+      </div>
+
+      <div class="auth-options">
+        <label class="auth-remember">
+          {{ form.remember_me }}
+          <span class="auth-remember__text">Stay signed in on this device</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block auth-submit">Log in</button>
+    </form>
+
+    <footer class="auth-card__footer">
+      <p class="auth-card__switch">No account? <a href="{% url 'register' %}">Create one</a></p>
+      <p class="auth-card__aux">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="auth-card__dot" aria-hidden="true">·</span>
+        <a href="{% url 'chatbot:start' %}">Chat without signing up</a>
+      </p>
+    </footer>
+  </div>
+
+  <aside class="auth-split__aside" aria-hidden="true">
+    <div class="auth-split__aside-img" style="background-image: url('{% static 'img/auth.png' %}');"></div>
+    <div class="auth-split__aside-caption">
+      <p class="auth-split__aside-kicker">The Law · Nigeria</p>
+      <p class="auth-split__aside-quote">Justice for every Nigerian — in plain language.</p>
+    </div>
+  </aside>
+</div>
 {% endblock %}

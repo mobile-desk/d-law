@@ -25,7 +25,8 @@ def chat_view(request, case_id):
     if request.method == "POST":
         content = request.POST.get("content", "").strip()
         if content:
-            process_intake_post(case, content)
+            sender = request.user if request.user.is_authenticated else None
+            process_intake_post(case, content, sender=sender)
         return redirect("chatbot:chat", case_id=case.pk)
 
     ctx = {

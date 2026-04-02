@@ -97,9 +97,17 @@
       {% endif %}
 
       {% if case.description %}
-      <section class="case-card" aria-labelledby="intake-sum-title">
-        <h2 id="intake-sum-title" class="case-card__title">Intake summary</h2>
+      <details class="case-card case-card--summary" id="case-summary" open>
+        <summary id="intake-sum-title" class="case-card__title case-card__summary-trigger">Intake summary</summary>
         <div class="case-article">{{ case.description }}</div>
+      </details>
+      {% endif %}
+
+      {% if case.intake_chat_summary %}
+      <section class="case-card case-card--ai-digest" aria-labelledby="ai-digest-title">
+        <h2 id="ai-digest-title" class="case-card__title">AI guide conversation</h2>
+        <p class="case-card__lead case-card__lead--digest">Digest of the client’s chat with the Guide — separate from your message thread.</p>
+        <div class="case-article case-article--digest">{{ case.intake_chat_summary }}</div>
       </section>
       {% endif %}
     </div>
@@ -108,10 +116,10 @@
       <section class="case-card case-card--thread" aria-labelledby="thread-ws-title">
         <h2 id="thread-ws-title" class="case-card__title">Messages</h2>
         <div class="case-thread">
-          {% for m in case_messages %}
-          <article class="case-msg {% if m.is_ai %}case-msg--ai{% else %}case-msg--user{% endif %}">
+          {% for m in case_human_messages %}
+          <article class="case-msg {% if m.sender_id == case.assigned_to_id %}case-msg--me{% else %}case-msg--them{% endif %}">
             <div class="case-msg__head">
-              <span class="case-msg__who">{% if m.is_ai %}Guide{% elif m.sender_id == request.user.id %}You{% elif m.sender %}{{ m.sender.email }}{% else %}Client{% endif %}</span>
+              <span class="case-msg__who">{% if m.sender_id == request.user.id %}You{% elif m.sender %}{{ m.sender.email }}{% else %}Client{% endif %}</span>
               <time class="case-msg__time" datetime="{{ m.created_at|date:'c' }}">{{ m.created_at|date:"M j, H:i" }}</time>
             </div>
             <div class="case-msg__body">{{ m.content }}</div>
@@ -147,4 +155,21 @@
     </div>
   </nav>
 </div>
+{% endblock %}
+{% block page_scripts %}
+<script>
+(function () {
+  var d = document.getElementById("case-summary");
+  if (!d || !window.matchMedia) return;
+  var mq = window.matchMedia("(min-width: 768px)");
+  function keepOpenOnDesktop() {
+    if (mq.matches) d.setAttribute("open", "");
+  }
+  d.addEventListener("toggle", function () {
+    if (mq.matches && !d.open) d.open = true;
+  });
+  mq.addEventListener("change", keepOpenOnDesktop);
+  keepOpenOnDesktop();
+})();
+</script>
 {% endblock %}

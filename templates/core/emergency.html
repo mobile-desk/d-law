@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Emergency and SOS · The Law{% endblock %}
+{% block body_class %}page-product page-emergency{% endblock %}
+{% block main_class %}container product-page{% endblock %}
+
+{% block content %}
+<header class="product-hero product-hero--compact">
+  <p class="product-hero__eyebrow">Feature 4 — Emergency</p>
+  <h1 class="product-hero__title">Emergencies and SOS</h1>
+  <p class="product-hero__lead">
+    If you are in immediate danger, get to safety first. This page lists public emergency lines. One-tap SOS recording is <strong>not part of the current web MVP</strong>—the product today is this site in your browser.
+  </p>
+</header>
+
+<section class="product-section" aria-labelledby="helplines-heading">
+  <h2 id="helplines-heading" class="product-h2">Public helplines (verify locally)</h2>
+  <p class="product-prose">Numbers can change. Confirm with official government or police sources for your state.</p>
+  <ul class="emergency-list">
+    <li><strong>112</strong> — National emergency number (many states)</li>
+    <li><strong>199</strong> — Police emergency (widely publicised)</li>
+    <li><strong>State commands</strong> — Your state police public relations office can give current hotlines.</li>
+    <li><strong>NHRC</strong> — National Human Rights Commission for complaints about rights violations (see official site for contacts).</li>
+  </ul>
+</section>
+
+<section class="product-section product-section--walnut" aria-labelledby="sos-heading">
+  <h2 id="sos-heading" class="product-h2">SOS recording</h2>
+  <p class="product-prose">
+    A future version might add <strong>one-tap audio or video recording</strong> during encounters, with secure backup and share to a trusted contact or lawyer. That needs device permissions beyond what a normal website can do. <strong>We are not building that in the MVP;</strong> if we add it later, it would likely be a separate native app or a heavily permissioned installable experience—not a promise for now.
+  </p>
+  <p class="product-prose">Today, document what happened in <a href="{% url 'chatbot:start' %}">chat</a>{% if user.is_authenticated %} and in your <a href="{% url 'cases:list' %}">case log</a>{% else %} and in your <a href="{% url 'register' %}">case log</a> once you have an account{% endif %}.</p>
+</section>
+
+<section class="product-section" aria-labelledby="safety-heading">
+  <h2 id="safety-heading" class="product-h2">Safety first</h2>
+  <ul class="product-objectives product-objectives--plain">
+    <li><span class="product-objectives__num" aria-hidden="true">•</span> No recording is worth physical harm. Comply where you must, then seek help.</li>
+    <li><span class="product-objectives__num" aria-hidden="true">•</span> The Law does not provide real-time monitoring or emergency dispatch.</li>
+    <li><span class="product-objectives__num" aria-hidden="true">•</span> For scripts in the moment, see <a href="{% url 'quick_cards' %}">quick cards</a>.</li>
+  </ul>
+</section>
+
+<p class="product-back"><a href="{% url 'product' %}">← Product overview</a></p>
+{% endblock %}

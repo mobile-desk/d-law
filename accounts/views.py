@@ -28,6 +28,15 @@ class AppLoginView(LoginView):
     authentication_form = EmailAuthenticationForm
     redirect_authenticated_user = True
 
+    def form_valid(self, form):
+        remember = form.cleaned_data.get("remember_me")
+        response = super().form_valid(form)
+        if remember:
+            self.request.session.set_expiry(60 * 60 * 24 * 30)
+        else:
+            self.request.session.set_expiry(0)
+        return response
+
 
 class AppLogoutView(LogoutView):
     next_page = "/"

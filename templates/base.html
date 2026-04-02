@@ -26,6 +26,8 @@
         <span class="visually-hidden">Menu</span>
       </label>
       <nav class="nav" id="site-nav" aria-label="Main">
+        <a class="nav__link" href="{% url 'product' %}">Product</a>
+        <a class="nav__link" href="{% url 'quick_cards' %}">Quick cards</a>
         <a class="nav__link" href="{% url 'chatbot:start' %}">Chat</a>
         {% if user.is_authenticated %}
           <a class="nav__link" href="{% url 'cases:list' %}">My cases</a>

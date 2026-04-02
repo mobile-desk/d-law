@@ -1,19 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Sign up{% endblock %}
-{% block content %}
-<h1>Create an account</h1>
-<p class="lead">Track your cases and message professionals when matched.</p>
+{% load static %}
+{% block title %}Sign up · The Law{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block main_class %}container container--auth-wide{% endblock %}
 
-<form method="post" class="card form-card">
-  {% csrf_token %}
-  {% for field in form %}
-    <div class="form-group">
-      {{ field.label_tag }}
-      {{ field }}
-      {{ field.errors }}
+{% block content %}
+<div class="auth-split">
+  <div class="auth-split__main">
+    <div class="auth-brand-mark" aria-hidden="true">
+      <svg class="auth-brand-mark__icon" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="19" stroke="currentColor" stroke-width="1.5"/><path d="M12 26V14l8-4 8 4v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 10v20M16 18h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary btn-block">Sign up</button>
-</form>
-<p class="footer-note"><a href="{% url 'login' %}">Already have an account?</a></p>
+    <header class="auth-card__head">
+      <h1 class="auth-card__title">Create an account</h1>
+      <p class="auth-card__sub">One login for cases, messages, and alerts.</p>
+    </header>
+
+    <ul class="auth-trust" aria-label="Included with your account">
+      <li>Private workspace for each matter</li>
+      <li>Alerts when something needs you</li>
+      <li>Optional phone for urgent contact</li>
+    </ul>
+
+    <form method="post" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="auth-errors" role="alert">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+      {% for field in form %}
+        <div class="form-group auth-field auth-field--{{ field.name }}">
+          {{ field.label_tag }}
+          <div class="auth-input-wrap">
+            {{ field }}
+          </div>
+          {% if field.help_text %}<p class="form-hint">{{ field.help_text }}</p>{% endif %}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-block auth-submit">Create account</button>
+    </form>
+
+    <footer class="auth-card__footer">
+      <p class="auth-card__switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+      <p class="auth-card__aux">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="auth-card__dot" aria-hidden="true">·</span>
+        <a href="{% url 'chatbot:start' %}">Try chat first</a>
+      </p>
+    </footer>
+  </div>
+
+  <aside class="auth-split__aside" aria-hidden="true">
+    <div class="auth-split__aside-img" style="background-image: url('{% static 'img/auth.png' %}');"></div>
+    <div class="auth-split__aside-caption">
+      <p class="auth-split__aside-kicker">MVP · Web app</p>
+      <p class="auth-split__aside-quote">No install — use The Law in your browser on any device.</p>
+    </div>
+  </aside>
+</div>
 {% endblock %}

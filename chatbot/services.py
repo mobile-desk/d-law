@@ -40,9 +40,40 @@ CATEGORIES = (
 )
 
 _KEYWORD_MAP = (
-    (("police", "detain", "station", "sars", "extortion"), "police_abuse"),
+    (
+        (
+            "police",
+            "detain",
+            "station",
+            "sars",
+            "extortion",
+            "stop and search",
+            "stopped and searched",
+            "searched me",
+            "checkpoint",
+            "roadblock",
+            "bribe",
+            "harassed by police",
+        ),
+        "police_abuse",
+    ),
     (("human rights", "fundamental rights", "constitution"), "human_rights"),
-    (("domestic", "abuse", "violence", "battery", "spouse"), "domestic_violence"),
+    (
+        (
+            "domestic",
+            "abuse",
+            "violence",
+            "battery",
+            "spouse",
+            "rape",
+            "raped",
+            "raping",
+            "sexual assault",
+            "molest",
+            "molested",
+        ),
+        "domestic_violence",
+    ),
     (("theft", "robbery", "robbed", "rob", "stolen", "fraud", "crime", "arrest", "charge"), "criminal"),
     (
         (
@@ -106,7 +137,20 @@ def _intake_system_prompt_json() -> str:
         "You are not a lawyer; give general education about rights and next steps. "
         "Write like a calm, caring person — not a form or a call centre script. "
         "Briefly mirror their words or feeling, then ask at most one short follow-up. "
-        "Prefer Nigerian context (1999 Constitution, NHRC, police conduct). "
+        "When the user describes police, stop-and-search, checkpoints, searches, extortion by officers, "
+        "or similar: you MUST include concrete rights information in the same reply—not only questions. "
+        "Use a short heading **Your rights (general information)** with bullet points in plain language "
+        "(Constitution: dignity, freedom from inhuman treatment; Police Act 2020 principles: powers must be "
+        "exercised lawfully; you may ask why you are stopped if it is safe; do not pay illegal bribes; "
+        "note officer details if safe; NHRC or official complaints when safe). "
+        "Safety first; this is education, not legal advice. "
+        "CRITICAL: Never assume facts the user did not state (e.g. do not say they are in court, "
+        "have filed a case, or have spoken to police unless they said so). "
+        "If the user discloses sexual violence, rape, or assault: lead with empathy and belief; "
+        "do not blame or minimise; do not pivot to abstract constitutional trivia. "
+        "Mention safety first, then optional reporting, medical evidence, and specialist support in Nigeria "
+        "(e.g. Mirabel Centre, Lagos; similar services in other states) in general terms. "
+        "Prefer Nigerian context (1999 Constitution, NHRC, police conduct) when relevant. "
         "If the user wants to sue someone, go to court, get a lawyer, or take formal legal action, "
         "your reply MUST end with a clear sentence telling them they can use this app’s "
         "“Find help” / lawyer-matching step to request a verified lawyer—not as legal advice, "
@@ -115,6 +159,40 @@ def _intake_system_prompt_json() -> str:
         + json.dumps(list(CATEGORIES))
         + "}"
     )
+
+
+_POLICE_ENCOUNTER_APPENDIX = (
+    "Additional instruction for THIS thread: the user may be discussing police contact, stop-and-search, "
+    "or a checkpoint. Keep empathy short. Then ALWAYS include the heading **Your rights (general information)** "
+    "followed by 3–6 bullet points on Nigerian law in plain language: e.g. right to dignity and freedom from "
+    "inhuman treatment (Constitution); police powers must be exercised lawfully (Police Act 2020); you may ask "
+    "why you are stopped or what power they rely on if you can do so safely; you should not be forced to pay "
+    "illegal bribes; you may note badge numbers or names if safe; you can complain to the NHRC or police "
+    "oversight when safe. End with at most one short follow-up question. Do not send empathy-only replies."
+)
+
+
+def _conversation_about_police(user_text: str, history: list[dict[str, Any]]) -> bool:
+    """True when recent messages suggest police / stop-and-search so we add the appendix to the system prompt."""
+    parts = [user_text or ""]
+    for m in history[-20:]:
+        parts.append(str(m.get("content", "")))
+    blob = " ".join(parts).lower()
+    if re.search(r"\b(police|officer|officers|sars|policemen|policeman)\b", blob):
+        return True
+    if re.search(r"\b(stop\s+and\s+search|stopped\s+and\s+searched)\b", blob):
+        return True
+    if "searched" in blob and re.search(
+        r"\b(me|us|my|our|bag|phone|car|vehicle|pocket|body|room)\b", blob
+    ):
+        return True
+    if re.search(r"\b(checkpoint|roadblock|detained|police station|extortion|bribe|harass)\b", blob):
+        return True
+    if "stopped" in blob and (
+        "police" in blob or "officer" in blob or "search" in blob or "checkpoint" in blob
+    ):
+        return True
+    return False
 
 
 def _user_seeks_lawyer_or_litigation(text: str) -> bool:
@@ -220,17 +298,77 @@ def _history_to_chat_messages(history: list[dict[str, Any]]) -> list[dict[str, s
     return messages
 
 
+def _strip_trailing_json_artifact(text: str) -> str:
+    """If the model echoed JSON after prose, or mixed formats, hide it from the user."""
+    if not text:
+        return text
+    lines = text.splitlines()
+    out: list[str] = []
+    for line in lines:
+        s = line.strip()
+        if s.startswith("{") and ("reply" in s or "category_guess" in s):
+            continue
+        if s == "}" or s == "{":
+            continue
+        out.append(line)
+    cleaned = "\n".join(out).strip()
+    return cleaned or text
+
+
 def _parse_intake_llm_json(raw: str, user_text: str) -> tuple[str, str | None]:
     raw = raw.strip()
+    data: dict[str, Any] | None = None
     try:
         data = json.loads(raw)
+    except json.JSONDecodeError:
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start != -1 and end > start:
+            try:
+                data = json.loads(raw[start : end + 1])
+            except json.JSONDecodeError:
+                data = None
+    if data is not None:
         reply = data.get("reply", raw)
         cat = data.get("category_guess")
         if cat not in CATEGORIES:
             cat = classify_category(user_text)
-        return str(reply), cat
-    except json.JSONDecodeError:
-        return raw, classify_category(user_text)
+        return str(reply).strip(), cat
+    fallback = _strip_trailing_json_artifact(raw)
+    return fallback, classify_category(user_text)
+
+
+def _discloses_sexual_violence_crisis(text: str) -> bool:
+    """High-risk disclosures: use a fixed template instead of the LLM."""
+    t = text.lower()
+    if not t:
+        return False
+    if re.search(
+        r"\b(rape|raped|raping|rapist|sexual assault|sexually assaulted|"
+        r"defiled|defilement|molested|molestation|groped|forced sex|"
+        r"non-?consensual)\b",
+        t,
+        re.I,
+    ):
+        return True
+    if "rape" in t or "raped" in t:
+        return True
+    return False
+
+
+def _crisis_sexual_violence_reply() -> str:
+    return (
+        "I'm really sorry you went through this. What happened to you is serious, and it's not your fault.\n\n"
+        "If you're in immediate danger, please get to a safe place first and contact emergency services or "
+        "someone you trust, if you can.\n\n"
+        "In Nigeria, survivors can report to the police; a hospital can document injuries for evidence; "
+        "and organisations such as **Mirabel Centre** (Lagos) and other women's rights / crisis services "
+        "support survivors—search for a rape crisis centre in your state or ask a trusted NGO for a referral. "
+        "You are not alone.\n\n"
+        "If you're ready, you can say whether you're in a safe place right now, and which state or city you're in "
+        "(only what feels safe to share). This app is not a substitute for a lawyer or counsellor—"
+        "when you're ready, you can use **Find help** to request a verified professional."
+    )
 
 
 def _groq_reply(user_text: str, history: list[dict[str, Any]]) -> tuple[str, str | None]:
@@ -253,7 +391,10 @@ def _groq_reply(user_text: str, history: list[dict[str, Any]]) -> tuple[str, str
     _groq_print(f"intake → chat.completions model={model}")
 
     client = OpenAI(api_key=key, base_url=GROQ_OPENAI_BASE)
-    messages = [{"role": "system", "content": _intake_system_prompt_json()}]
+    system_text = _intake_system_prompt_json()
+    if _conversation_about_police(user_text, history):
+        system_text = system_text + "\n\n" + _POLICE_ENCOUNTER_APPENDIX
+    messages = [{"role": "system", "content": system_text}]
     messages.extend(_history_to_chat_messages(history))
     messages.append({"role": "user", "content": user_text})
 
@@ -321,7 +462,7 @@ def _rule_based_reply(
                     "I hear you. For housing issues, location matters — which state or city should we think about?",
                 ),
             )
-        return _pick_variant(
+        loc = _pick_variant(
             seed,
             (
                 "Thanks — where did this happen? A state or city in Nigeria is enough.",
@@ -329,6 +470,15 @@ def _rule_based_reply(
                 "Helpful context. Where did this take place (state or city is fine)?",
             ),
         )
+        if category == "police_abuse" or _what_happened_suggests_police(wh):
+            rights = (
+                "**Your rights (general information):** In Nigeria your dignity is protected under the Constitution; "
+                "police powers (including stop-and-search) must be exercised lawfully under the Police Act 2020. "
+                "You should not be forced to pay illegal bribes. If it is safe, note officer or vehicle details; "
+                "you can complain to the NHRC or official police channels later.\n\n"
+            )
+            return rights + loc
+        return loc
     if next_key == "when":
         return _pick_variant(
             seed,
@@ -367,9 +517,13 @@ def _rule_based_reply(
 def rights_snippet(category: str) -> str:
     snippets = {
         "police_abuse": (
-            "In Nigeria, you have the right to dignity and freedom from torture (Constitution). "
-            "You may ask why you are being stopped; note officer details if safe. "
-            "NHRC and legal aid can help with complaints."
+            "**Your rights (general information)** — In Nigeria: you have rights to dignity and freedom from "
+            "inhuman or degrading treatment (1999 Constitution). Police powers—including stop-and-search—must be "
+            "exercised lawfully (Police Act 2020). You may ask why you are stopped or what power is being used, "
+            "if you can do so calmly and safely. You should not be forced to pay illegal bribes or “fees.” "
+            "If it is safe, note officer names, badges, or vehicle numbers. You can lodge complaints with the "
+            "National Human Rights Commission or through official police complaint channels when it is safe. "
+            "This is general education, not legal advice."
         ),
         "domestic_violence": (
             "Your safety comes first. Consider reaching police or trusted services when safe. "
@@ -407,6 +561,18 @@ def build_intake_reply(
     intake_patch = _infer_intake_patches(user_message, intake_data)
     merged = merge_intake(intake_data, intake_patch)
 
+    if _discloses_sexual_violence_crisis(user_message):
+        cat = classify_category(user_message)
+        if cat not in ("domestic_violence", "human_rights"):
+            cat = "human_rights"
+        return {
+            "reply": _crisis_sexual_violence_reply(),
+            "category": cat,
+            "intake_patch": intake_patch,
+            "show_assignment_cta": True,
+            "reply_source": "crisis",
+        }
+
     raw_llm, ai_cat = _groq_reply(user_message, history)
     base_cat = classify_category(user_message)
 
@@ -443,6 +609,28 @@ def build_intake_reply(
         "show_assignment_cta": show_cta,
         "reply_source": reply_source,
     }
+
+
+def _what_happened_suggests_police(wh: str) -> bool:
+    t = (wh or "").lower()
+    return any(
+        k in t
+        for k in (
+            "police",
+            "officer",
+            "search",
+            "searched",
+            "stopped",
+            "checkpoint",
+            "roadblock",
+            "sars",
+            "bribe",
+            "detain",
+            "station",
+            "extort",
+            "harass",
+        )
+    )
 
 
 def _mentions_housing_stress(text: str) -> bool:
@@ -518,6 +706,8 @@ def _should_capture_what_happened(text: str) -> bool:
         "detain",
         "sars",
         "abuse",
+        "rape",
+        "raped",
         "fraud",
         "scam",
         "landlord",
@@ -720,14 +910,96 @@ def build_case_description(merged: dict[str, Any], category: str) -> str:
     return _rules_case_description(merged)
 
 
-def process_intake_post(case, content: str):
+def _intake_transcript_summarize_system_prompt() -> str:
+    return (
+        "You are a legal assistant for lawyers in Nigeria. "
+        "You are given a transcript of a conversation between a client and an AI legal guide (not a lawyer). "
+        "Write a neutral digest for the assigned lawyer: "
+        "what the client says happened, their main concerns, and what they want. "
+        "Use a short heading **DIGEST** then 4–8 bullet points. Plain English. "
+        "Do not give legal advice or predict outcomes. Do not paste long quotes."
+    )
+
+
+def _groq_summarize_intake_transcript(transcript: str) -> str | None:
+    key = _groq_api_key()
+    if not key:
+        return None
+    if not transcript.strip():
+        return None
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return None
+    model = _groq_model()
+    _groq_print(f"intake_transcript_summary → chat.completions model={model}")
+    client = OpenAI(api_key=key, base_url=GROQ_OPENAI_BASE)
+    t = transcript.strip()[:14000]
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": _intake_transcript_summarize_system_prompt()},
+                {"role": "user", "content": "Summarize this transcript:\n\n" + t},
+            ],
+            temperature=0.2,
+        )
+    except Exception as e:
+        _groq_print(f"intake_transcript_summary ERROR: {e!r}")
+        _groq_error_hint(e)
+        return None
+    text = (resp.choices[0].message.content or "").strip()
+    return text or None
+
+
+def _rules_fallback_transcript_summary(intake_messages: list) -> str:
+    if not intake_messages:
+        return ""
+    lines = ["**DIGEST** (from Guide chat; structured summary unavailable)", ""]
+    for m in intake_messages[-40:]:
+        label = "Guide" if m.is_ai else "Client"
+        body = (m.content or "").strip().replace("\n", " ")
+        if len(body) > 220:
+            body = body[:217] + "…"
+        lines.append(f"• {label}: {body}")
+    return "\n".join(lines).strip()
+
+
+def refresh_intake_conversation_summary(case) -> None:
+    """Rebuilds Case.intake_chat_summary from intake (Guide) messages only."""
+    from cases.models import Case as CaseModel
+    from cases.threading import intake_thread_messages
+
+    msgs = intake_thread_messages(case)
+    if not msgs:
+        CaseModel.objects.filter(pk=case.pk).update(intake_chat_summary="")
+        return
+    parts = []
+    for m in msgs:
+        label = "Guide" if m.is_ai else "Client"
+        parts.append(f"{label}: {m.content}")
+    transcript = "\n\n".join(parts)
+    text = _groq_summarize_intake_transcript(transcript)
+    if not text:
+        text = _rules_fallback_transcript_summary(msgs)
+    CaseModel.objects.filter(pk=case.pk).update(intake_chat_summary=text)
+
+
+def process_intake_post(case, content: str, sender=None):
     """
     Persist user + AI messages and update case. Returns (case, ai_message, show_assignment_cta).
     """
     from cases.models import Message
+    from cases.threading import THREAD_INTAKE
 
     content = (content or "").strip()
-    Message.objects.create(case=case, sender=None, content=content, is_ai=False)
+    Message.objects.create(
+        case=case,
+        sender=sender,
+        content=content,
+        is_ai=False,
+        metadata={"thread": THREAD_INTAKE},
+    )
 
     history = [
         {"role": "assistant" if m.is_ai else "user", "content": m.content}
@@ -754,10 +1026,12 @@ def process_intake_post(case, content: str):
         content=result["reply"],
         is_ai=True,
         metadata={
+            "thread": THREAD_INTAKE,
             "category": result["category"],
             "show_assignment_cta": result["show_assignment_cta"],
             "reply_source": result.get("reply_source", "rules"),
         },
     )
     case.refresh_from_db()
+    refresh_intake_conversation_summary(case)
     return case, ai_msg, result["show_assignment_cta"]

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Product · The Law — Justice for every Nigerian{% endblock %}
+{% block body_class %}page-product{% endblock %}
+{% block main_class %}container product-page{% endblock %}
+
+{% block content %}
+<header class="product-hero">
+  <p class="product-hero__eyebrow">TheLaw · Product brief</p>
+  <h1 class="product-hero__title">Justice for every Nigerian</h1>
+  <p class="product-hero__lead">
+    <strong>The MVP is this website:</strong> guided chat, the professional directory, and case tracking in your browser. We are not shipping a native mobile app—use this site on your phone the same as on desktop.
+  </p>
+</header>
+
+<section class="product-section" aria-labelledby="problem-heading">
+  <h2 id="problem-heading" class="product-h2">Why TheLaw exists</h2>
+  <p class="product-prose">
+    Millions of Nigerians face rights violations—by police, landlords, employers, and others in authority—without clear recourse. The law exists, but it stays invisible unless you can afford a lawyer or already know where to look. TheLaw closes that gap with <strong>instant guidance</strong> you can use under pressure and <strong>verified professionals</strong> when you need representation. Over time we may add deeper reporting and other tools; the current focus is a solid web experience for everyone.
+  </p>
+  <ul class="product-objectives">
+    <li><span class="product-objectives__num">1</span> Empower citizens with accurate, plain-language knowledge of Nigerian law—available through this site whenever you are online, starting with English on the web MVP.</li>
+    <li><span class="product-objectives__num">2</span> Connect people with active matters to verified, integrity-rated lawyers—prioritising pro bono and affordable legal aid.</li>
+    <li><span class="product-objectives__num">3</span> Build a national picture of rights violations through anonymous reporting—supporting reform and safer communities.</li>
+  </ul>
+</section>
+
+<section class="product-section product-section--walnut" aria-labelledby="features-heading">
+  <h2 id="features-heading" class="product-h2">Features and status</h2>
+  <p class="product-prose product-prose--tight">What the web MVP includes today, and what we may add after the core product is stable. (We are not building a separate native app in this phase.)</p>
+
+  <ul class="feature-matrix" role="list">
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Know your rights (AI guidance)</div>
+      <span class="status-badge status-badge--live">Web</span>
+      <p class="feature-matrix__desc">Describe your situation; get Nigeria-aware guidance on police encounters, tenancy, work, domestic safety, bail, and more.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Lawyer directory and matching</div>
+      <span class="status-badge status-badge--live">Web</span>
+      <p class="feature-matrix__desc">Verified professionals, case-type fit, pro bono where capacity allows.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Case tracking</div>
+      <span class="status-badge status-badge--live">Web</span>
+      <p class="feature-matrix__desc">Log incidents, deadlines, and messages in one private workspace.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Emergency SOS and record encounters</div>
+      <span class="status-badge status-badge--roadmap">Planned</span>
+      <p class="feature-matrix__desc">One-tap audio/video with secure backup is not in the MVP; it would need device-level permissions beyond a normal website.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Offline mode</div>
+      <span class="status-badge status-badge--roadmap">Planned</span>
+      <p class="feature-matrix__desc">Offline rights content may come later via a progressive web experience or a future app—not part of the current web MVP.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Voice and local languages</div>
+      <span class="status-badge status-badge--roadmap">Planned</span>
+      <p class="feature-matrix__desc">Pidgin and local languages are goals for later releases after the English web flow is strong.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">“What to say right now” quick cards</div>
+      <span class="status-badge status-badge--live"><a href="{% url 'quick_cards' %}">Web</a></span>
+      <p class="feature-matrix__desc">Memorisable scripts for stop-and-search, detention, eviction, and more.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Anonymous incident reporting</div>
+      <span class="status-badge status-badge--soon">Soon</span>
+      <p class="feature-matrix__desc">Report violations without revealing identity; aggregated for accountability. Geo-tagging would come with a dedicated reporting flow, not in the first MVP.</p>
+    </li>
+    <li class="feature-matrix__row">
+      <div class="feature-matrix__name">Community forum and nearby alerts</div>
+      <span class="status-badge status-badge--roadmap">Planned</span>
+      <p class="feature-matrix__desc">Moderated community features and location-based alerts are not in the MVP.</p>
+    </li>
+  </ul>
+</section>
+
+<section class="product-section" aria-labelledby="audience-heading">
+  <h2 id="audience-heading" class="product-h2">Who we serve</h2>
+  <div class="audience-grid">
+    <div class="audience-card">
+      <h3 class="audience-card__title">Everyday citizens</h3>
+      <p>Police harassment, unlawful fines, uncertainty about your rights.</p>
+    </div>
+    <div class="audience-card">
+      <h3 class="audience-card__title">Small business</h3>
+      <p>Regulatory pressure, unlawful levies, contract disputes.</p>
+    </div>
+    <div class="audience-card">
+      <h3 class="audience-card__title">Students and youth</h3>
+      <p>Campus issues, intimidation, knowing what the law allows.</p>
+    </div>
+    <div class="audience-card">
+      <h3 class="audience-card__title">Market traders</h3>
+      <p>Task-force encounters, informal-sector exploitation.</p>
+    </div>
+    <div class="audience-card">
+      <h3 class="audience-card__title">Tenants</h3>
+      <p>Unlawful eviction threats, landlord abuse.</p>
+    </div>
+    <div class="audience-card">
+      <h3 class="audience-card__title">Survivors and NGOs</h3>
+      <p>VAPP-aware guidance, anonymous paths, partnerships for outreach.</p>
+    </div>
+  </div>
+</section>
+
+<section class="product-section product-section--links" aria-labelledby="tools-heading">
+  <h2 id="tools-heading" class="product-h2">Tools on this site</h2>
+  <ul class="product-link-grid">
+    <li><a class="product-link-card" href="{% url 'chatbot:start' %}"><span class="product-link-card__label">Chat</span><span class="product-link-card__hint">Start guided intake</span></a></li>
+    <li><a class="product-link-card" href="{% url 'quick_cards' %}"><span class="product-link-card__label">Quick cards</span><span class="product-link-card__hint">Scripts under pressure</span></a></li>
+    <li><a class="product-link-card" href="{% url 'emergency' %}"><span class="product-link-card__label">Emergency</span><span class="product-link-card__hint">Helplines and safety notes</span></a></li>
+    <li><a class="product-link-card" href="{% url 'report' %}"><span class="product-link-card__label">Report</span><span class="product-link-card__hint">Anonymous reporting (coming)</span></a></li>
+  </ul>
+</section>
+
+<section class="product-disclaimer" role="note">
+  <p><strong>Not legal advice.</strong> The Law provides information and connection services. Verify emergency numbers locally. Nothing here creates a lawyer–client relationship.</p>
+</section>
+{% endblock %}

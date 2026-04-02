@@ -14,6 +14,8 @@ from cases.permissions import (
     user_is_assigned_professional,
 )
 from cases.client_notify import maybe_queue_anonymous_reply_toast
+from cases.threading import intake_thread_messages, professional_thread_messages
+from chatbot.services import refresh_intake_conversation_summary
 from matching.engine import assign_case, lawyer_accept_case, lawyer_reject_case
 
 
@@ -88,6 +90,7 @@ def case_detail(request, case_id):
                         sender=request.user,
                         content=body,
                         is_ai=False,
+                        metadata={"thread": "professional"},
                     )
                     if not case.user_id and case.assigned_to_id == request.user.id:
                         maybe_queue_anonymous_reply_toast(request, case, request.user)
@@ -103,6 +106,7 @@ def case_detail(request, case_id):
                         sender=None,
                         content=body,
                         is_ai=False,
+                        metadata={"thread": "professional"},
                     )
             return redirect("cases:detail", case_id=case.pk)
 
@@ -127,11 +131,10 @@ def case_detail(request, case_id):
         case_viewer_role = "client"
 
     show_assignment_rows = user_is_assigned_professional(request, case) or request.user.is_staff
-    case_human_messages = (
-        Message.objects.filter(case=case, is_ai=False)
-        .select_related("sender")
-        .order_by("created_at")
-    )
+    case_human_messages = professional_thread_messages(case)
+    if not (case.intake_chat_summary or "").strip() and intake_thread_messages(case):
+        refresh_intake_conversation_summary(case)
+        case.refresh_from_db()
     return render(
         request,
         "cases/detail.html",

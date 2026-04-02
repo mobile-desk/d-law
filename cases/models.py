@@ -34,6 +34,10 @@ class Case(models.Model):
         related_name="client_cases",
     )
     description = models.TextField(blank=True)
+    intake_chat_summary = models.TextField(
+        blank=True,
+        help_text="Short digest of the client’s AI (Guide) chat for the lawyer — not the live thread.",
+    )
     category = models.CharField(max_length=255, blank=True)
     ai_classified_category = models.CharField(max_length=255, blank=True)
     intake_data = models.JSONField(

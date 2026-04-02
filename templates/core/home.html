@@ -1,181 +1,179 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}The Law — Know your rights, get help in Nigeria{% endblock %}
+{% block title %}The Law — Justice for every Nigerian{% endblock %}
 {% block body_class %}page-home{% endblock %}
-
-{% block full_width %}
-<section class="landing-hero landing-hero--alive" style="background-image: url('{% static 'img/hero-landing.png' %}');" aria-labelledby="landing-title">
-  <div class="landing-hero__orbs" aria-hidden="true">
-    <span class="landing-hero__orb landing-hero__orb--a"></span>
-    <span class="landing-hero__orb landing-hero__orb--b"></span>
-    <span class="landing-hero__orb landing-hero__orb--c"></span>
-  </div>
-  <div class="landing-hero__overlay landing-hero__overlay--alive" aria-hidden="true"></div>
-  <div class="landing-hero__inner">
-    <p class="landing-eyebrow">Nigeria · Legal information &amp; professional matching</p>
-    <h1 id="landing-title" class="landing-title">Know your rights.<br><span class="landing-title__accent">Get help you can trust.</span></h1>
-    <p class="landing-hero__lead">
-      Start with a private, guided conversation—on the web, on <strong>WhatsApp</strong>, or by <strong>SMS</strong>—with the same assistant.
-      Understand your options in plain language—then, if you choose,
-      we connect you with <strong>verified lawyers</strong> and <strong>human rights advocates</strong> matched to your situation.
-      Where capacity and fit allow, we also help place <strong>some matters pro bono</strong>.
-    </p>
-    <div class="landing-hero__actions">
-      <a class="btn btn-hero-solid" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
-      <a class="btn btn-hero-ghost" href="{% url 'register' %}">Create an account</a>
-    </div>
-    <ul class="landing-hero__trust" aria-label="Trust signals">
-      <li><span class="landing-check" aria-hidden="true"></span> No account required to begin</li>
-      <li><span class="landing-check" aria-hidden="true"></span> AI chat on WhatsApp &amp; SMS</li>
-      <li><span class="landing-check" aria-hidden="true"></span> Verified professionals</li>
-      <li><span class="landing-check" aria-hidden="true"></span> Built for sensitive cases</li>
-    </ul>
-  </div>
-</section>
-{% endblock %}
+{% block main_class %}container container--home{% endblock %}
 
 {% block content %}
-<div class="landing-page landing-page--alive">
+<div class="home">
+  <section class="home-hero" aria-labelledby="home-hero-title">
+    <div
+      class="home-hero__bg"
+      style="background-image: url('{% static 'img/hero.png' %}');"
+      role="presentation"
+      aria-hidden="true"
+    ></div>
+    <div class="home-hero__overlay" aria-hidden="true"></div>
+    <div class="home-hero__inner">
+      <p class="home-hero__eyebrow">
+        <span class="home-hero__brand">The Law · Nigeria</span>
+        <span class="home-hero__mvp-pill">MVP</span>
+      </p>
+      <h1 id="home-hero-title" class="home-hero__title">Know your rights.<br /><span class="home-hero__title-sub">Get help you can trust.</span></h1>
+      <p class="home-hero__lede">
+        <strong>This is our MVP:</strong> this website is guided chat, the professional directory, and case tracking in your browser—no app install. Plain-language guidance on Nigerian law and optional matching when you need it. Start anonymously whenever you are ready.
+      </p>
+      <div class="home-hero__actions">
+        <a class="btn btn-primary home-hero__btn" href="{% url 'chatbot:start' %}">Start chat</a>
+        <a class="btn btn-secondary home-hero__btn" href="{% url 'register' %}">Create account</a>
+      </div>
+      <p class="home-hero__note">No account required to begin · Sensitive topics welcome · We’re building in the open</p>
+    </div>
+    <figure class="home-hero__mobile-media">
+      <img
+        class="home-hero__mobile-img"
+        src="{% static 'img/hero.png' %}"
+        width="1600"
+        height="900"
+        alt="Lady Justice — scales and sword, symbolising fair treatment under the law"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </section>
 
-  <section class="landing-section" aria-labelledby="what-title">
-    <div class="section-rule"></div>
-    <h2 id="what-title">What we offer</h2>
-    <p class="landing-intro">
-      Legal help should not feel out of reach. The Law is a <strong>guided front door</strong>—structured,
-      Nigeria-aware information first, then optional connection to people who can take your case further.
-      A limited number of matters may be taken <strong>pro bono</strong> by participating professionals when eligibility and capacity align.
-    </p>
-    <div class="feature-grid">
-      <article class="feature-card">
-        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
-        <h3 class="feature-card__title">Rights guidance</h3>
-        <p>Clear questions and answers about what happened, where, and who was involved—so you see your situation in context, not a cold checklist.</p>
+  <section class="home-block" aria-labelledby="home-features-title">
+    <div class="home-block__head">
+      <h2 id="home-features-title" class="home-block__title">Built for real situations</h2>
+      <p class="home-block__subtitle">What the MVP includes today—more will ship as we learn from real use.</p>
+    </div>
+    <div class="home-features">
+      <article class="home-feature">
+        <div class="home-feature__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4a2 2 0 0 0-2 2v16l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="home-feature__name">Guided chat</h3>
+        <p class="home-feature__text">Describe what happened; get follow-ups in context—not a generic FAQ.</p>
       </article>
-      <article class="feature-card">
-        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
-        <h3 class="feature-card__title">Anonymous first</h3>
-        <p>Explore without signing up. Share only what feels safe. Create an account later to save your case and message a matched professional.</p>
+      <article class="home-feature">
+        <div class="home-feature__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="home-feature__name">Verified help</h3>
+        <p class="home-feature__text">Request connection to lawyers and advocates when you need hands-on support.</p>
       </article>
-      <article class="feature-card">
-        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
-        <h3 class="feature-card__title">Lawyers &amp; activists</h3>
-        <p>Not every issue belongs in court on day one. We include <strong>NGOs and defenders</strong> where that fit matters—not only barristers.</p>
+      <article class="home-feature">
+        <div class="home-feature__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.75"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="home-feature__name">Private first</h3>
+        <p class="home-feature__text">Explore without signing up; add an account when you want case tracking.</p>
       </article>
-      <article class="feature-card">
-        <div class="feature-card__diamond" aria-hidden="true"><span></span></div>
-        <h3 class="feature-card__title">WhatsApp &amp; SMS</h3>
-        <p>Chat with the same guided assistant where you already spend time—<strong>WhatsApp</strong> and <strong>SMS</strong>—so you can get clarity without opening a browser.</p>
+      <article class="home-feature">
+        <div class="home-feature__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M8 7h8M8 11h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="home-feature__name">Case tools</h3>
+        <p class="home-feature__text">Keep messages, deadlines, and updates in one workspace with an account.</p>
       </article>
     </div>
   </section>
 
-  <section class="landing-section landing-section--walnut" aria-labelledby="how-title">
-    <h2 id="how-title" class="landing-section--walnut__h">How it works</h2>
-    <ol class="step-list step-list--light">
-      <li>
-        <span class="step-list__num">1</span>
-        <div>
-          <strong>Guided chat</strong>
-          <p>Describe what happened on the site, on WhatsApp, or by SMS. The assistant follows up with structured questions and plain-language education.</p>
+  <section class="home-block home-block--flow" aria-labelledby="home-flow-title">
+    <div class="home-block__head">
+      <h2 id="home-flow-title" class="home-block__title">How it works</h2>
+      <p class="home-block__subtitle">Four steps from your first message to ongoing support.</p>
+    </div>
+    <ol class="home-flow">
+      <li class="home-flow__step">
+        <span class="home-flow__num">1</span>
+        <div class="home-flow__body">
+          <strong class="home-flow__label">Chat</strong>
+          <p>Tell us what happened. We ask clarifying questions in plain language.</p>
         </div>
       </li>
-      <li>
-        <span class="step-list__num">2</span>
-        <div>
-          <strong>Clarify your issue</strong>
-          <p>We help surface the type of matter—civil, criminal concern, police conduct, safety, or human rights. You can edit before sharing.</p>
+      <li class="home-flow__step">
+        <span class="home-flow__num">2</span>
+        <div class="home-flow__body">
+          <strong class="home-flow__label">Clarify</strong>
+          <p>Shape the type of matter before anything is shared with a professional.</p>
         </div>
       </li>
-      <li>
-        <span class="step-list__num">3</span>
-        <div>
-          <strong>Optional match</strong>
-          <p>Request a verified professional whose focus fits your category, when one is available.</p>
+      <li class="home-flow__step">
+        <span class="home-flow__num">3</span>
+        <div class="home-flow__body">
+          <strong class="home-flow__label">Match</strong>
+          <p>Request help when you are ready—when someone suitable is available.</p>
         </div>
       </li>
-      <li>
-        <span class="step-list__num">4</span>
-        <div>
-          <strong>One place to follow up</strong>
-          <p>With an account, track status, message your professional, and get alerts—without scattered threads.</p>
+      <li class="home-flow__step">
+        <span class="home-flow__num">4</span>
+        <div class="home-flow__body">
+          <strong class="home-flow__label">Follow up</strong>
+          <p>Use your account for alerts, messages, and case status in one place.</p>
         </div>
       </li>
     </ol>
   </section>
 
-  <section class="landing-section" aria-labelledby="issues-title">
-    <div class="section-rule"></div>
-    <h2 id="issues-title">Issues we help you think through</h2>
-    <p class="landing-intro">Examples—the assistant adapts to what you describe.</p>
-    <ul class="issue-tags" aria-label="Example issue types">
-      <li>Police &amp; detention</li>
-      <li>Work &amp; employment</li>
-      <li>Land &amp; tenancy</li>
-      <li>Domestic safety</li>
-      <li>Human rights</li>
-      <li>Civil disputes</li>
+  <section class="home-block" aria-labelledby="home-topics-title">
+    <div class="home-block__head">
+      <h2 id="home-topics-title" class="home-block__title">Common topics</h2>
+      <p class="home-block__subtitle">The assistant adapts to how you describe your situation.</p>
+    </div>
+    <ul class="home-chips">
+      <li><span class="home-chip">Police &amp; detention</span></li>
+      <li><span class="home-chip">Work &amp; employment</span></li>
+      <li><span class="home-chip">Land &amp; tenancy</span></li>
+      <li><span class="home-chip">Domestic safety</span></li>
+      <li><span class="home-chip">Human rights</span></li>
+      <li><span class="home-chip">Civil disputes</span></li>
     </ul>
   </section>
 
-  <section class="landing-section landing-split" aria-labelledby="who-title">
-    <div class="landing-split__img" role="presentation" style="background-image: url('{% static 'img/hero-statue.png' %}');"></div>
-    <div class="landing-split__content">
-      <h2 id="who-title">Who this is for</h2>
-      <h3 class="landing-h3">Residents &amp; workers</h3>
-      <p>If something feels wrong and you are unsure what the law says—or whether to involve a lawyer—start here before retainers or silence.</p>
-      <h3 class="landing-h3">People who need privacy</h3>
-      <p>When stigma or safety has stopped you from asking for help, anonymous chat lowers the barrier. You decide when to identify yourself.</p>
+  <section class="home-block" aria-labelledby="home-res-title">
+    <div class="home-block__head">
+      <h2 id="home-res-title" class="home-block__title">Resources</h2>
+      <p class="home-block__subtitle">Guides and tools alongside chat.</p>
+    </div>
+    <div class="home-resources">
+      <a class="home-resource" href="{% url 'product' %}">
+        <span class="home-resource__title">Product overview</span>
+        <span class="home-resource__meta">Full feature map</span>
+        <span class="home-resource__arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="home-resource" href="{% url 'quick_cards' %}">
+        <span class="home-resource__title">Quick cards</span>
+        <span class="home-resource__meta">What to say under pressure</span>
+        <span class="home-resource__arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="home-resource" href="{% url 'emergency' %}">
+        <span class="home-resource__title">Emergency</span>
+        <span class="home-resource__meta">Helplines &amp; safety notes</span>
+        <span class="home-resource__arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="home-resource" href="{% url 'report' %}">
+        <span class="home-resource__title">Reporting</span>
+        <span class="home-resource__meta">Anonymous reporting (coming)</span>
+        <span class="home-resource__arrow" aria-hidden="true">→</span>
+      </a>
     </div>
   </section>
 
-  <section class="landing-disclaimer" role="note">
-    <h2 class="landing-disclaimer__title">Important</h2>
-    <p>
-      <strong>The Law provides legal information and connection services, not legal advice.</strong>
-      Nothing here creates a lawyer–client relationship. For urgent danger, contact emergency services or a trusted helpline.
-      Confirm strategy with a qualified professional before acting or refraining from legal action.
-    </p>
+  <section class="home-disclaimer" role="note">
+    <p><strong>Not legal advice.</strong> The Law provides information and connection services only. Nothing here creates a lawyer–client relationship. For immediate danger, contact emergency services or a trusted helpline.</p>
   </section>
 
-  <section class="landing-cta-bottom" aria-labelledby="cta-title">
-    <h2 id="cta-title" class="landing-cta-bottom__headline">Take the first step</h2>
-    <p class="landing-cta-bottom__text">Free to start on the web, WhatsApp, or SMS. Clarity first—then choice.</p>
-    <div class="landing-hero__actions landing-hero__actions--footer">
-      <a class="btn btn-primary" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
-      <a class="btn btn-secondary" href="{% url 'login' %}">Log in</a>
+  <section class="home-cta-band" aria-labelledby="home-cta-title">
+    <div class="home-cta-band__inner">
+      <h2 id="home-cta-title" class="home-cta-band__title">Ready when you are</h2>
+      <p class="home-cta-band__text">Start a private conversation or open an account to track your matter.</p>
+      <p class="home-cta-band__mvp">Still in MVP—thank you for helping us improve The Law.</p>
+      <div class="home-cta-band__actions">
+        <a class="btn btn-primary" href="{% url 'chatbot:start' %}">Start anonymous chat</a>
+        <a class="btn btn-secondary home-cta-band__ghost" href="{% url 'login' %}">Log in</a>
+      </div>
     </div>
   </section>
-
 </div>
-{% endblock %}
-
-{% block page_scripts %}
-<script>
-(function () {
-  var page = document.querySelector(".landing-page--alive");
-  if (!page || !("IntersectionObserver" in window)) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var sections = page.querySelectorAll(":scope > section");
-  var obs = new IntersectionObserver(
-    function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("landing-in-view");
-        obs.unobserve(entry.target);
-      });
-    },
-    { root: null, rootMargin: "0px 0px -5% 0px", threshold: 0.12 }
-  );
-  document.documentElement.classList.add("landing-scroll-enhanced");
-  var vh = window.innerHeight || document.documentElement.clientHeight;
-  sections.forEach(function (sec) {
-    var r = sec.getBoundingClientRect();
-    if (r.top < vh * 0.88 && r.bottom > vh * 0.06) {
-      sec.classList.add("landing-in-view");
-    } else {
-      obs.observe(sec);
-    }
-  });
-})();
-</script>
 {% endblock %}

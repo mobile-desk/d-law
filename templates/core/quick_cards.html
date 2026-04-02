@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}What to say right now · Quick cards · The Law{% endblock %}
+{% block body_class %}page-product page-quick-cards{% endblock %}
+{% block main_class %}container product-page{% endblock %}
+
+{% block content %}
+<header class="product-hero product-hero--compact">
+  <p class="product-hero__eyebrow">Feature 7 — Quick cards</p>
+  <h1 class="product-hero__title">What to say right now</h1>
+  <p class="product-hero__lead">
+    Short scripts you can use under pressure. They are educational prompts, not legal advice. Stay calm, do not escalate, and seek a lawyer or trusted help when you can.
+  </p>
+</header>
+
+<div class="quick-cards">
+  <article class="quick-card" id="card-police">
+    <h2 class="quick-card__title">Police stop, search, or demand for money</h2>
+    <p class="quick-card__context">You are stopped in public; officers ask for a bribe or threaten you.</p>
+    <blockquote class="quick-card__script">
+      <p>“I am willing to cooperate. I prefer to handle any fine through the proper process. Please tell me the offence you are charging me with and the station or court where this will be addressed. I will not pay cash on the roadside.”</p>
+    </blockquote>
+    <p class="quick-card__note">If you fear for your safety, prioritise getting to a safe place. You can use <a href="{% url 'emergency' %}">emergency numbers</a> and document what happened afterwards in chat or your case log.</p>
+  </article>
+
+  <article class="quick-card" id="card-detention">
+    <h2 class="quick-card__title">Asked to come to the station or detained</h2>
+    <p class="quick-card__context">You are told you are under arrest or must follow officers.</p>
+    <blockquote class="quick-card__script">
+      <p>“Please tell me why I am being detained and who is in charge here. I want to contact someone I trust and, when appropriate, a lawyer. I will not resist, but I need to understand the reason and my rights in this process.”</p>
+    </blockquote>
+    <p class="quick-card__note">Laws on arrest and detention exist to protect you; specifics depend on the situation. Use chat for structured follow-up—especially if you were held without clear reason.</p>
+  </article>
+
+  <article class="quick-card" id="card-eviction">
+    <h2 class="quick-card__title">Eviction notice or lockout threat</h2>
+    <p class="quick-card__context">A landlord or agent pressures you to leave without following lawful process.</p>
+    <blockquote class="quick-card__script">
+      <p>“I need any eviction step in writing, with the proper notice period under our agreement and the law. I will not accept a forced lockout without due process. I am willing to discuss payment or a lawful timeline through the right channel.”</p>
+    </blockquote>
+    <p class="quick-card__note">Tenancy rules vary; wrongful eviction is a serious matter. Save messages, notices, and photos, and ask for guidance in chat.</p>
+  </article>
+
+  <article class="quick-card" id="card-work">
+    <h2 class="quick-card__title">Workplace: unlawful levy or threat</h2>
+    <p class="quick-card__context">Someone in authority demands informal payment or threatens your job without a clear basis.</p>
+    <blockquote class="quick-card__script">
+      <p>“I want to resolve this properly. Please put the request or accusation in writing so I can understand it and respond. I am ready to follow lawful procedures and speak through the right office or union representative.”</p>
+    </blockquote>
+    <p class="quick-card__note">Document dates, names, and witnesses. Labour and regulatory routes depend on your sector—use chat to narrow the issue.</p>
+  </article>
+</div>
+
+<p class="product-back"><a href="{% url 'product' %}">← Product overview</a></p>
+{% endblock %}

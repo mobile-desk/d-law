@@ -58,9 +58,17 @@
       {% endif %}
 
       {% if case.description %}
-      <section class="case-card" aria-labelledby="summary-title">
-        <h2 id="summary-title" class="case-card__title">Summary</h2>
+      <details class="case-card case-card--summary" id="case-summary" open>
+        <summary id="summary-title" class="case-card__title case-card__summary-trigger">Summary</summary>
         <div class="case-article">{{ case.description }}</div>
+      </details>
+      {% endif %}
+
+      {% if case.assigned_to and case.intake_chat_summary %}
+      <section class="case-card case-card--ai-digest" aria-labelledby="ai-digest-client-title">
+        <h2 id="ai-digest-client-title" class="case-card__title">AI guide conversation</h2>
+        <p class="case-card__lead case-card__lead--digest">Summary of your chat with the Guide — your messages with your professional are on the right.</p>
+        <div class="case-article case-article--digest">{{ case.intake_chat_summary }}</div>
       </section>
       {% endif %}
 
@@ -78,7 +86,7 @@
         <h2 id="thread-client-title" class="case-card__title">Messages</h2>
         <div class="case-thread">
           {% for m in case_human_messages %}
-          <article class="case-msg case-msg--user">
+          <article class="case-msg {% if m.sender_id == case.assigned_to_id %}case-msg--them{% else %}case-msg--me{% endif %}">
             <div class="case-msg__head">
               <span class="case-msg__who">{% if m.sender_id == case.assigned_to_id %}{{ case.assigned_to.get_full_name|default:case.assigned_to.email }}{% elif user.is_authenticated and m.sender_id == user.id %}You{% elif not m.sender %}You{% else %}{{ m.sender.get_full_name|default:m.sender.email }}{% endif %}</span>
               <time class="case-msg__time" datetime="{{ m.created_at|date:'c' }}">{{ m.created_at|date:"M j, H:i" }}</time>
@@ -144,11 +152,19 @@
   {% endif %}
 
   {% if case.description %}
-  <section class="case-card" aria-labelledby="summary-title">
-    <h2 id="summary-title" class="case-card__title">
+  <details class="case-card case-card--summary" id="case-summary" open>
+    <summary id="summary-title" class="case-card__title case-card__summary-trigger">
       {% if case_viewer_role == 'professional' %}Intake summary{% elif case_viewer_role == 'staff' %}Case summary{% else %}Summary{% endif %}
-    </h2>
+    </summary>
     <div class="case-article">{{ case.description }}</div>
+  </details>
+  {% endif %}
+
+  {% if case.intake_chat_summary %}
+  <section class="case-card case-card--ai-digest" aria-labelledby="ai-digest-role-title">
+    <h2 id="ai-digest-role-title" class="case-card__title">AI guide conversation</h2>
+    <p class="case-card__lead case-card__lead--digest">Digest of the client’s chat with the Guide — separate from your message thread.</p>
+    <div class="case-article case-article--digest">{{ case.intake_chat_summary }}</div>
   </section>
   {% endif %}
 
@@ -213,4 +229,21 @@
   </nav>
   {% endif %}
 </div>
+{% endblock %}
+{% block page_scripts %}
+<script>
+(function () {
+  var d = document.getElementById("case-summary");
+  if (!d || !window.matchMedia) return;
+  var mq = window.matchMedia("(min-width: 768px)");
+  function keepOpenOnDesktop() {
+    if (mq.matches) d.setAttribute("open", "");
+  }
+  d.addEventListener("toggle", function () {
+    if (mq.matches && !d.open) d.open = true;
+  });
+  mq.addEventListener("change", keepOpenOnDesktop);
+  keepOpenOnDesktop();
+})();
+</script>
 {% endblock %}

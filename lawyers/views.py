@@ -7,6 +7,8 @@ from cases.assignment_intake import assignment_detail_rows_for_lawyer
 from cases.client_notify import maybe_queue_anonymous_reply_toast
 from cases.models import Case, Message
 from cases.permissions import user_is_assigned_professional
+from cases.threading import intake_thread_messages, professional_thread_messages
+from chatbot.services import refresh_intake_conversation_summary
 
 
 def _lawyer_case_category_label(case: Case) -> str:
@@ -46,11 +48,15 @@ def lawyer_case_detail(request, case_id):
                 sender=request.user,
                 content=body,
                 is_ai=False,
+                metadata={"thread": "professional"},
             )
             maybe_queue_anonymous_reply_toast(request, case, request.user)
         return redirect("lawyers:case", case_id=case.pk)
 
-    msgs = case.messages.select_related("sender").order_by("created_at")
+    case_human_messages = professional_thread_messages(case)
+    if not (case.intake_chat_summary or "").strip() and intake_thread_messages(case):
+        refresh_intake_conversation_summary(case)
+        case.refresh_from_db()
     client_share_url = request.build_absolute_uri(
         reverse("cases:share_access", kwargs={"share_token": case.share_token})
     )
@@ -59,7 +65,7 @@ def lawyer_case_detail(request, case_id):
         "lawyers/case_detail.html",
         {
             "case": case,
-            "case_messages": msgs,
+            "case_human_messages": case_human_messages,
             "category_label": _lawyer_case_category_label(case),
             "assignment_detail_rows": assignment_detail_rows_for_lawyer(case),
             "client_share_url": client_share_url,

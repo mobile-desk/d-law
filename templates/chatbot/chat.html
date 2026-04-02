@@ -79,8 +79,8 @@
           <h2 id="chat-msg-heading-empty" class="chat-bar__eyebrow">Message</h2>
           <form method="post" class="chat-compose">
             {% csrf_token %}
-            <label class="visually-hidden" for="chat-message">Your message</label>
-            <textarea id="chat-message" name="content" rows="2" placeholder="Describe what happened, or what you need help with…" autocomplete="off" required></textarea>
+            <label class="visually-hidden" for="chat-message-empty">Your message</label>
+            <textarea id="chat-message-empty" name="content" rows="2" placeholder="Describe what happened, or what you need help with…" autocomplete="off" required></textarea>
             <div class="chat-compose__actions">
               <button type="submit" class="chat-send__btn chat-send__btn--fab" aria-label="Send message">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -153,8 +153,8 @@
           <h2 id="chat-msg-heading" class="chat-bar__eyebrow">Message</h2>
           <form method="post" class="chat-compose chat-compose--compact">
             {% csrf_token %}
-            <label class="visually-hidden" for="chat-message">Your message</label>
-            <textarea id="chat-message" name="content" rows="1" placeholder="Write a message…" autocomplete="off" required></textarea>
+            <label class="visually-hidden" for="chat-message-thread">Your message</label>
+            <textarea id="chat-message-thread" name="content" rows="1" placeholder="Write a message…" autocomplete="off" required></textarea>
             <div class="chat-compose__actions">
               <button type="submit" class="chat-send__btn chat-send__btn--fab" aria-label="Send message">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -176,6 +176,23 @@
   }
   var el = document.getElementById("chat-stream");
   if (el) el.scrollTop = el.scrollHeight;
+})();
+(function () {
+  var root = document.querySelector(".chat-app");
+  if (!root) return;
+  root.querySelectorAll("form").forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      if (form.dataset.sent === "1") {
+        e.preventDefault();
+        return;
+      }
+      form.dataset.sent = "1";
+      var buttons = form.querySelectorAll("button[type='submit']");
+      buttons.forEach(function (btn) {
+        btn.disabled = true;
+      });
+    });
+  });
 })();
 </script>
 {% endblock %}

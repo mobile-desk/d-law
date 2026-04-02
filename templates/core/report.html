@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Anonymous reporting · The Law{% endblock %}
+{% block body_class %}page-product page-report{% endblock %}
+{% block main_class %}container product-page{% endblock %}
+
+{% block content %}
+<header class="product-hero product-hero--compact">
+  <p class="product-hero__eyebrow">Feature 8 — Anonymous reporting</p>
+  <h1 class="product-hero__title">Report a rights violation</h1>
+  <p class="product-hero__lead">
+    We aim to add a way to submit anonymous reports that feed a national picture of patterns. The form is not live in this MVP; you can still begin safely through guided chat on this site.
+  </p>
+</header>
+
+<section class="product-section product-section--walnut" aria-labelledby="soon-heading">
+  <h2 id="soon-heading" class="product-h2">Coming soon</h2>
+  <p class="product-prose">
+    The full pipeline will include tokenised identity (so we never need your name to accept a report), aggregation for maps and research partners, and safeguards against abuse. That requires backend and policy work beyond this MVP.
+  </p>
+</section>
+
+<section class="product-section" aria-labelledby="now-heading">
+  <h2 id="now-heading" class="product-h2">What you can do today</h2>
+  <ul class="product-objectives product-objectives--plain">
+    <li><span class="product-objectives__num">1</span> Use <a href="{% url 'chatbot:start' %}">anonymous chat</a> to describe what happened; the assistant is designed for sensitive topics.</li>
+    <li><span class="product-objectives__num">2</span> Create an account when you are ready and use <strong>case tracking</strong> to keep evidence and deadlines in one place.</li>
+    <li><span class="product-objectives__num">3</span> Request connection to a <strong>verified lawyer or advocate</strong> when you want hands-on help.</li>
+  </ul>
+</section>
+
+<div class="report-placeholder" role="status">
+  <p class="report-placeholder__title">Web report form</p>
+  <p class="report-placeholder__text">Not activated yet. Check back after our next release, or start with chat above.</p>
+</div>
+
+<p class="product-back"><a href="{% url 'product' %}">← Product overview</a></p>
+{% endblock %}

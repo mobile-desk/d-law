@@ -13,7 +13,7 @@ class MessageInline(admin.TabularInline):
 class CaseAdmin(admin.ModelAdmin):
     list_display = ("id", "share_token", "status", "category", "user", "assigned_to", "is_anonymous", "created_at")
     list_filter = ("status", "is_anonymous")
-    search_fields = ("description", "category", "share_token")
+    search_fields = ("description", "intake_chat_summary", "category", "share_token")
     raw_id_fields = ("user", "assigned_to")
     readonly_fields = ("guest_session_id", "share_token", "created_at", "updated_at")
     inlines = [MessageInline]
