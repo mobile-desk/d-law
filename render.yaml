@@ -12,7 +12,7 @@ services:
     name: legal-access
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py populate_lawyer_profiles --bootstrap 8
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py ensure_superuser --bootstrap && python manage.py populate_lawyer_profiles --bootstrap 8
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -30,3 +30,9 @@ services:
         fromDatabase:
           name: legal-access-db
           property: connectionString
+      # First deploy: set both so ensure_superuser --bootstrap can create /admin login.
+      # After a superuser exists, bootstrap no-ops; you may remove the password from the dashboard.
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
