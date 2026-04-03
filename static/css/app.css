@@ -656,16 +656,33 @@ body.page-chat {
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+  /* Fill the viewport so flex children (main) get a real height budget for inner scroll */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+html:has(body.page-chat) {
+  height: 100%;
+}
+
+/* Desktop: pin the chat page to one viewport height so flex + min-height:0 can bound
+   .chat-stream; otherwise body grows with content and messages never scroll inside. */
+@media (min-width: 640px) {
+  html:has(body.page-chat) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body.page-chat {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 639px) {
-  .page-chat {
-    min-height: 100vh;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-
   .page-chat .site-header {
     flex-shrink: 0;
     max-width: 100%;
@@ -673,32 +690,32 @@ body.page-chat {
   }
 
   .page-chat main.chat-main {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     display: flex;
     flex-direction: column;
     min-height: 0;
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   .page-chat .chat-canvas {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-height: 0;
     min-width: 0;
     max-width: 100%;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   .page-chat .chat-app {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-height: 0;
     min-width: 0;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 }
 
@@ -708,6 +725,10 @@ body.page-chat {
   padding: 0.35rem max(0.5rem, env(safe-area-inset-left)) 1.25rem max(0.5rem, env(safe-area-inset-right));
   width: 100%;
   min-width: 0;
+}
+
+.page-chat main.chat-main {
+  max-width: min(100%, 72rem);
 }
 
 @media (min-width: 640px) {
@@ -750,7 +771,7 @@ body.page-chat {
   }
   .chat-body {
     border-radius: 0;
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-height: 0;
     min-width: 0;
     max-width: 100%;
@@ -760,7 +781,7 @@ body.page-chat {
     flex-direction: column;
   }
   .chat-stream {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-height: 0;
     min-width: 0;
     max-width: 100%;
@@ -782,7 +803,7 @@ body.page-chat {
     padding-right: max(0.5rem, env(safe-area-inset-right));
     padding-bottom: max(0.65rem, env(safe-area-inset-bottom));
   }
-  .chat-main {
+  .page-chat main.chat-main {
     padding-left: 0;
     padding-right: 0;
     padding-bottom: 0;
@@ -794,6 +815,57 @@ body.page-chat {
   }
   .chat-compose--compact textarea {
     font-size: 16px;
+  }
+}
+
+/* Desktop / tablet: lock chat to the viewport so the message list scrolls inside .chat-stream
+   (flex: 1 1 0% + min-height: 0 gives a bounded height so overflow-y:auto works reliably). */
+@media (min-width: 640px) {
+  .page-chat .site-header {
+    flex-shrink: 0;
+  }
+
+  .page-chat main.chat-main {
+    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .page-chat .chat-canvas {
+    flex: 1 1 0%;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-chat .chat-app {
+    flex: 1 1 0%;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .page-chat .chat-body {
+    flex: 1 1 0%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-chat .chat-stream {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -819,6 +891,14 @@ body.page-chat {
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
+}
+
+/* Chat card: keep the intake header in normal flow. Sticky + z-index was painting the
+   hint row over the first messages when the page or card scrolled. */
+.page-chat .chat-top {
+  position: relative;
+  top: auto;
+  z-index: 1;
 }
 
 .chat-top__row {
@@ -1177,6 +1257,13 @@ body.page-chat {
   box-shadow:
     0 -4px 20px rgba(26, 21, 18, 0.06),
     0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 640px) {
+  .page-chat .chat-bar--sticky {
+    position: relative;
+    bottom: auto;
+  }
 }
 
 .chat-section + .chat-section {
