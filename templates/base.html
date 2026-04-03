@@ -15,8 +15,16 @@
     <div class="site-header__goldline" aria-hidden="true"></div>
     <div class="site-header__inner">
       <a class="logo" href="{% url 'home' %}">
-        <span class="logo__seal" aria-hidden="true"></span>
-        <span class="logo__text"><span class="logo__serif">The Law</span><span class="logo__sans">Nigeria</span></span>
+        <img
+          class="logo__img"
+          src="{% static 'img/the_law_logo_no_bg.png' %}"
+          alt=""
+          width="160"
+          height="48"
+          decoding="async"
+        />
+        <span class="logo__wordmark" aria-hidden="true">The Law</span>
+        <span class="visually-hidden">The Law Nigeria</span>
       </a>
       <input type="checkbox" id="site-nav-open" class="visually-hidden">
       <label for="site-nav-open" class="site-nav-burger" id="site-nav-burger" aria-expanded="false" aria-controls="site-nav">
@@ -28,6 +36,7 @@
       <nav class="nav" id="site-nav" aria-label="Main">
         <a class="nav__link" href="{% url 'product' %}">Product</a>
         <a class="nav__link" href="{% url 'quick_cards' %}">Quick cards</a>
+        <a class="nav__link" href="{% url 'lawyers_directory' %}">Lawyers</a>
         <a class="nav__link" href="{% url 'chatbot:start' %}">Chat</a>
         {% if user.is_authenticated %}
           <a class="nav__link" href="{% url 'cases:list' %}">My cases</a>

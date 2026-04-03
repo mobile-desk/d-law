@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 
 
@@ -25,3 +26,13 @@ def health(request):
     from django.http import JsonResponse
 
     return JsonResponse({"status": "ok"})
+
+
+def lawyers_directory(request):
+    User = get_user_model()
+    lawyers = (
+        User.objects.filter(user_type="lawyer")
+        .order_by("last_name", "first_name", "email")
+        .only("first_name", "last_name", "email")
+    )
+    return render(request, "core/lawyers_list.html", {"lawyers": lawyers})

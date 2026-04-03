@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Lawyers · The Law Nigeria{% endblock %}
+{% block body_class %}page-lawyers-directory{% endblock %}
+{% block main_class %}container lawyers-directory{% endblock %}
+
+{% block content %}
+<header class="lawyers-directory__hero">
+  <p class="lawyers-directory__eyebrow">Directory</p>
+  <h1 class="lawyers-directory__title">Lawyers on The Law</h1>
+  <p class="lawyers-directory__lead">
+    Registered lawyer accounts on the platform. Use email to reach out directly.
+  </p>
+</header>
+
+{% if lawyers %}
+<div class="lawyers-directory__table-wrap" role="region" aria-label="Lawyer list" tabindex="0">
+  <table class="lawyers-directory__table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lawyer in lawyers %}
+      <tr>
+        <td>{{ lawyer.get_full_name|default:lawyer.email }}</td>
+        <td>
+          <a class="lawyers-directory__email" href="mailto:{{ lawyer.email }}">{{ lawyer.email }}</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="lawyers-directory__empty">No lawyer accounts are registered yet.</p>
+{% endif %}
+{% endblock %}
